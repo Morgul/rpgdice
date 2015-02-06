@@ -27,7 +27,7 @@ value
 
 ///////
 
-roll
+roll "die roll"
   = count:integer? OWS 'd' sides:integer
     { return {
         type: 'roll',
@@ -38,7 +38,7 @@ roll
 variable
   = name:identifier { return {type: 'variable', name: name}; }
 
-numberValue
+numberValue "numeric value"
   = value:number { return {type: 'number', value: value}; }
 
 ///////
