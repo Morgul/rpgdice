@@ -14,11 +14,6 @@ var parser = require('../lib/parser');
 describe('Dice Syntax Parser', function()
 {
 
-    beforeEach(function()
-    {
-        // Code goes here.
-    });
-
     describe('Dice Syntax', function()
     {
         it('supports `XdY` dice format', function()
@@ -126,27 +121,65 @@ describe('Dice Syntax Parser', function()
 
     describe('Variables', function()
     {
-        xit('supports standard variable names', function()
+        it('supports standard variable names', function()
         {
+            var results = parser.parse('foobar');
+            expect(results.type).to.equal('variable');
+            expect(results.name).to.equal('foobar');
+
+            results = parser.parse('fooBar239875');
+            expect(results.type).to.equal('variable');
+            expect(results.name).to.equal('fooBar239875');
         });
 
-        xit('supports quoted variable names', function()
+        it('supports quoted variable names', function()
         {
+            var results = parser.parse('\'var with spaces\'');
+            expect(results.type).to.equal('variable');
+            expect(results.name).to.equal('var with spaces');
+
+            results = parser.parse('[var with spaces]');
+            expect(results.type).to.equal('variable');
+            expect(results.name).to.equal('var with spaces');
         });
     });
 
     describe('Functions', function()
     {
-        xit('supports functions', function()
+        it('supports functions', function()
         {
+            var results = parser.parse('foobar(2d6)');
+            expect(results.type).to.equal('function');
+            expect(results.name).to.equal('foobar');
+            expect(results).to.have.deep.property('args.length', 1);
+            expect(results).to.have.deep.property('args[0].count', 2);
+            expect(results).to.have.deep.property('args[0].sides', 6);
         });
 
-        xit('supports functions with multiple arguments', function()
+        it('supports functions with no arguments', function()
         {
+            var results = parser.parse('foobar()');
+            expect(results.type).to.equal('function');
+            expect(results.name).to.equal('foobar');
         });
 
-        xit('supports quoted names for functions', function()
+        it('supports functions with multiple arguments', function()
         {
+            var results = parser.parse('foobar(2d6, 3)');
+            expect(results.type).to.equal('function');
+            expect(results.name).to.equal('foobar');
+            expect(results).to.have.deep.property('args.length', 2);
+            expect(results).to.have.deep.property('args[0].count', 2);
+            expect(results).to.have.deep.property('args[0].sides', 6);
+            expect(results).to.have.deep.property('args[1].type', 'number');
+            expect(results).to.have.deep.property('args[1].value', 3);
+        });
+
+        it('supports quoted names for functions', function()
+        {
+            var results = parser.parse('\'func with spaces\'(2d6)');
+            expect(results.type).to.equal('function');
+            expect(results.name).to.equal('func with spaces');
         });
     });
 });
