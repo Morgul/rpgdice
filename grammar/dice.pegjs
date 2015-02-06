@@ -8,14 +8,14 @@ additive
 multiplicative
   = left:primary OWS oper:[*/] right:multiplicative
     { return {type: (oper == '*') ? 'multiply' : 'divide', left: left, right: right}; }
-  / factor:number OWS '(' additive:additive OWS ')'
-    { return {type: 'multiply', left: factor, right: additive}; }
   / primary
 
 primary
   = function
   / value
   / OWS '(' additive:additive OWS ')' { return additive; }
+  / count:number OWS '(' additive:additive OWS ')'
+    { return {type: 'repeat', count: count, right: additive}; }
 
 function
   = name:identifier OWS '(' arg1:additive rest:(OWS ',' arg:additive { return arg; })* OWS ')' { return {type: 'function', name: name, args: [arg1].concat(rest) }; }
