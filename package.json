@@ -1,0 +1,33 @@
+{
+  "name": "rpgdice",
+  "version": "1.0.0-alpha.1",
+  "description": "A generic RPG dice roller syntax and library.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "dice",
+    "rpg",
+    "roller",
+    "dice",
+    "roller"
+  ],
+  "author": "Christopher S. Case <chris.case@g33xnexus.com>",
+  "license": "MIT",
+  "dependencies": {
+    "bluebird": "^2.9.6",
+    "lodash": "^3.1.0",
+    "pegjs": "^0.8.0"
+  },
+  "devDependencies": {
+    "browserify": "^8.1.3",
+    "grunt": "^0.4.5",
+    "grunt-browserify": "^3.3.0",
+    "grunt-contrib-clean": "^0.6.0",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-karma": "^0.10.1",
+    "grunt-peg": "^1.5.0",
+    "karma": "^0.12.31"
+  }
+}

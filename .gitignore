@@ -1,0 +1,10 @@
+.DS_Store
+
+# IntelliJ artifacts
+.idea
+
+# build artifacts
+dist
+
+# Node artifacts
+node_modules
