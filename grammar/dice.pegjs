@@ -28,13 +28,11 @@ value
 ///////
 
 roll
-  = count:integer? OWS separator:[dw] minimum:(integer OWS '..')? sides:integer
+  = count:integer? OWS 'd' sides:integer
     { return {
         type: 'roll',
         count: (!count && count != 0) ? 1 : count,
-        sides: sides,
-        wildcard: (separator == 'w'),
-        minimum: (minimum || {})[0]
+        sides: sides
     }; }
 
 variable
