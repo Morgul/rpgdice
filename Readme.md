@@ -1,8 +1,8 @@
 # RPGDice
 
-This project is an opinionated dice syntax and roller library designed to be used for any dice-based RPG system. It's
+This project is an opinionated dice syntax and roller library designed to be used for any dice-based RPG system. Its
 main goal is to use a straightforward, easy to use grammar that has enough flexibility to allow players to easily
-codify their dice rolls. One of it's central features, the ability to use variables, exists to facilitate a 'write once'
+codify their dice rolls. One of its central features, the ability to use variables, exists to facilitate a 'write once'
 philosophy of dice rolls.
 
 ## Dice are Hard
@@ -14,7 +14,7 @@ user just gets to see the results of what they told it to roll.
 
 ## Opinionated
 
-There is a semi-formal [dice notation][] floating around. I personally find it's syntax clunky, difficult to use, and
+There is a semi-formal [dice notation][] floating around. I personally find its syntax clunky, difficult to use, and
 nearly impossible to extend. Instead, I've created a syntax that is, in essence, mathematical operations, plus
 functions,  variables, and `XdY` syntax. I feel my version is easy enough to learn for veterans and newbies alike, while
 leveraging some basic programing concepts, like the [principal of least surprise][pola].
