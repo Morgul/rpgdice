@@ -23,11 +23,6 @@ module.exports = function(grunt)
             }
         },
         clean: ["dist", "lib/parser.js"],
-        karma: {
-            unit: {
-                configFile: 'karma-config.js'
-            }
-        },
         watch: {
             peg: {
                 files:['grammar/**/*.pegjs'],
@@ -50,12 +45,10 @@ module.exports = function(grunt)
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-peg');
     grunt.loadNpmTasks('grunt-browserify');
-    grunt.loadNpmTasks('grunt-karma');
     grunt.loadNpmTasks('grunt-contrib-clean');
 
     // Setup the build task.
     grunt.registerTask('build', ['clean', 'peg', 'browserify']);
-    grunt.registerTask('test', ['build', 'karma:unit']);
     grunt.registerTask('devel', ['clean', 'watch']);
 }; // module.exports
 
