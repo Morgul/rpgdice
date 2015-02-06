@@ -75,42 +75,37 @@ _If you would like to dive further into the syntax, please check out our [Syntax
 
 ## API
 
-The API for rolling dice is super simple. There are exactly 2 functions, `rpgdice.eval()` and `rpgdice.roll()`. Each
-take a dice string to parse, and only differ in what they output; `eval()` simply returns you the tokenized roll, while
-`roll()` will return you the parse tree including results. (Additionally, `roll()` can take the results of `eval()`, not
+The API for rolling dice is super simple. There are exactly 2 functions, `rpgdice.parse()` and `rpgdice.roll()`. Each
+take a dice string to parse, and only differ in what they output; `parse()` simply returns you the tokenized roll, while
+`roll()` will return you the parse tree including results. (Additionally, `roll()` can take the results of `parse()`, not
 just a string.)
 
 Here's a few examples:
 
 ```javascript
-
 // Roll a simple equation
-var results = rpgDice.roll('3d6 + 4');
+rpgDice.roll('3d6 + 4')
+    .then(function(results)
+    {
+        // Pretty-print the results
+        console.log('Results:', results.prettyPrint());
 
-// Pretty-print the results
-console.log('Results:', results.prettyPrint());
-
-// Print the total:
-console.log('Total:', results.value);
+        // Print the total:
+        console.log('Total:', results.value);
+    });
 
 //----------------------------------------------------------------
 
 // Evaluate an expression
-var eval = rpgDice.eval('3(4d10 - 2)`);
-
-// Do work with the eval object...
-
-// Now, get the results for this roll
-var results = rpgDice.roll(eval);
-
-//----------------------------------------------------------------
-
-// Roll, using the promise api:
-
-rpgDice.roll('2d8 + 11')
-    .then(function(results)
+rpgDice.parse('3(4d10 - 2)`)
+    .then(function(eval)
     {
-        console.log('Total:', results.value);
+        // Do work with the eval object...
+    })
+    .then(function(eval)
+    {
+        // Now, get the results for this roll
+        var results = rpgDice.roll(eval);
     });
 ```
 
