@@ -97,7 +97,7 @@ rpgDice.roll('3d6 + 4')
 //----------------------------------------------------------------
 
 // Evaluate an expression
-rpgDice.parse('3(4d10 - 2)`)
+rpgDice.parse('3(4d10 - 2)')
     .then(function(eval)
     {
         // Do work with the eval object...
