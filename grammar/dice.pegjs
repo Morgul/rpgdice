@@ -1,3 +1,7 @@
+{
+	var Roll = require('./Roll');
+}
+
 start
   = additive:additive OWS { return additive; }
 
@@ -29,11 +33,7 @@ value
 
 roll "die roll"
   = count:integer? OWS 'd' sides:integer
-    { return {
-        type: 'roll',
-        count: (!count && count != 0) ? 1 : count,
-        sides: sides
-    }; }
+    { return new Roll((!count && count != 0) ? 1 : count, sides); }
 
 variable
   = name:identifier { return {type: 'variable', name: name}; }
