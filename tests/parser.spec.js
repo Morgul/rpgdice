@@ -106,12 +106,21 @@ describe('Dice Syntax Parser', function()
 
     describe('Grouping', function()
     {
-        xit('grouping overrides order of operations', function()
+        it('grouping overrides order of operations', function()
         {
+            var results = parser.parse('(3 + 2) * 4');
+            expect(results).to.have.deep.property('type', 'multiply');
+            expect(results).to.have.deep.property('left.type', 'add');
+            expect(results).to.have.deep.property('left.left.value', 3);
+            expect(results).to.have.deep.property('left.right.value', 2);
+            expect(results).to.have.deep.property('right.value', 4);
         });
 
-        xit('supports implicit repeats with `X(...)`', function()
+        it('supports implicit repeats with `X(...)`', function()
         {
+            var results = parser.parse('3(2d6 + 4)');
+            expect(results.type).to.equal('repeat');
+            expect(results.count).to.equal(3);
         });
     });
 
