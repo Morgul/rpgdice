@@ -22,7 +22,7 @@ primary
   / OWS '(' additive:additive OWS ')' { return additive; }
 
 function
-  = name:identifier OWS '(' arg1:additive rest:(OWS ',' arg:additive { return arg; })* OWS ')' { return {type: 'function', name: name, args: [arg1].concat(rest) }; }
+  = name:identifier OWS '(' arg1:additive? rest:(OWS ',' arg:additive { return arg; })* OWS ')' { return {type: 'function', name: name, args: [arg1].concat(rest) }; }
 
 value
   = roll
