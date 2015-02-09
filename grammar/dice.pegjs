@@ -1,8 +1,9 @@
 {
 	var Roll = require('./Roll');
 	var Operation = require('./Operation');
-	var Number = require('./Number');
+	var Num = require('./Number');
 	var Variable = require('./Variable');
+	var Func = require('./Function');
 }
 
 start
@@ -25,7 +26,7 @@ primary
   / OWS '(' additive:additive OWS ')' { return additive; }
 
 function
-  = name:identifier OWS '(' arg1:additive? rest:(OWS ',' arg:additive { return arg; })* OWS ')' { return {type: 'function', name: name, args: [arg1].concat(rest) }; }
+  = name:identifier OWS '(' arg1:additive? rest:(OWS ',' arg:additive { return arg; })* OWS ')' { return new Func(name, [arg1].concat(rest)); }
 
 value
   = roll
@@ -42,7 +43,7 @@ variable
   = name:identifier { return new Variable(name); }
 
 numberValue "numeric value"
-  = value:number { return new Number(value); }
+  = value:number { return new Num(value); }
 
 ///////
 
