@@ -4,6 +4,7 @@
 	var Num = require('./Number');
 	var Variable = require('./Variable');
 	var Func = require('./Function');
+	var Repeat = require('./Repeat');
 }
 
 start
@@ -20,7 +21,7 @@ multiplicative
 
 primary
   = count:number OWS '(' additive:additive OWS ')'
-    { return {type: 'repeat', count: count, right: additive}; }
+    { return new Repeat(count, additive); }
   / function
   / value
   / OWS '(' additive:additive OWS ')' { return additive; }
