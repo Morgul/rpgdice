@@ -2,6 +2,7 @@
 	var Roll = require('./Roll');
 	var Operation = require('./Operation');
 	var Number = require('./Number');
+	var Variable = require('./Variable');
 }
 
 start
@@ -38,7 +39,7 @@ roll "die roll"
     { return new Roll((!count && count != 0) ? 1 : count, sides); }
 
 variable
-  = name:identifier { return {type: 'variable', name: name}; }
+  = name:identifier { return new Variable(name); }
 
 numberValue "numeric value"
   = value:number { return new Number(value); }
