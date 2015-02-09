@@ -1,17 +1,18 @@
 {
 	var Roll = require('./Roll');
+	var Operation = require('./Operation');
 }
 
 start
   = additive:additive OWS { return additive; }
 
 additive
-  = left:multiplicative OWS oper:[+-] right:additive { return {type: (oper == '+') ? 'add' : 'subtract', left: left, right: right}; }
+  = left:multiplicative OWS oper:[+-] right:additive { return new Operation((oper == '+') ? 'add' : 'subtract', left, right); }
   / multiplicative
 
 multiplicative
   = left:primary OWS oper:[*/] right:multiplicative
-    { return {type: (oper == '*') ? 'multiply' : 'divide', left: left, right: right}; }
+    { return new Operation((oper == '*') ? 'multiply' : 'divide', left, right); }
   / primary
 
 primary
