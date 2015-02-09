@@ -1,6 +1,7 @@
 {
 	var Roll = require('./Roll');
 	var Operation = require('./Operation');
+	var Number = require('./Number');
 }
 
 start
@@ -40,7 +41,7 @@ variable
   = name:identifier { return {type: 'variable', name: name}; }
 
 numberValue "numeric value"
-  = value:number { return {type: 'number', value: value}; }
+  = value:number { return new Number(value); }
 
 ///////
 
