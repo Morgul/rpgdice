@@ -15,11 +15,11 @@ multiplicative
   / primary
 
 primary
-  = function
+  = count:number OWS '(' additive:additive OWS ')'
+    { return {type: 'repeat', count: count, right: additive}; }
+  / function
   / value
   / OWS '(' additive:additive OWS ')' { return additive; }
-  / count:number OWS '(' additive:additive OWS ')'
-    { return {type: 'repeat', count: count, right: additive}; }
 
 function
   = name:identifier OWS '(' arg1:additive rest:(OWS ',' arg:additive { return arg; })* OWS ')' { return {type: 'function', name: name, args: [arg1].concat(rest) }; }
