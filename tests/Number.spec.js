@@ -8,7 +8,7 @@
 var expect = require('chai').expect;
 
 var parser = require('../lib/parser');
-var Number = require('../lib/Number');
+var Num = require('../lib/Number');
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -17,7 +17,7 @@ describe('Number Class', function()
     var number;
     beforeEach(function()
     {
-        number = new Number(3);
+        number = new Num(3);
     });
 
     it('can be converted to json', function()
@@ -29,6 +29,17 @@ describe('Number Class', function()
     {
         expect(number.toString()).to.equal('3');
         expect(parser.parse(number.toString())).to.deep.equal(number);
+    });
+
+    describe('#eval()', function()
+    {
+        it('returns itself with the value populated', function()
+        {
+            var results = number.eval();
+
+            // Ensure we populated value correctly
+            expect(results.value).to.equal(3);
+        });
     });
 });
 

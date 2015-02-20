@@ -31,6 +31,27 @@ describe('Operation Class', function()
         expect(op.toString()).to.equal('3 + 6');
         expect(parser.parse(op.toString())).to.deep.equal(op);
     });
+
+    describe('#eval()', function()
+    {
+        it('returns itself with the value populated', function()
+        {
+            var results = op.eval();
+            expect(results.value).to.exist;
+            expect(results.value).to.equal(9);
+        });
+
+        it('stores the evaluation of both `left` and `right` properties', function()
+        {
+            var results = op.eval();
+
+            expect(results.left.value).to.exist;
+            expect(results.left.type).to.equal('number');
+
+            expect(results.right.value).to.exist;
+            expect(results.right.type).to.equal('number');
+        });
+    });
 });
 
 // ---------------------------------------------------------------------------------------------------------------------

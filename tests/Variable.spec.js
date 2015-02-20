@@ -34,6 +34,22 @@ describe('Variable Class', function()
         expect(escapedVar.toString()).to.equal("'This is a var!'");
         expect(parser.parse(escapedVar.toString())).to.deep.equal(escapedVar);
     });
+
+    describe('#eval()', function()
+    {
+        it('returns itself with the value populated', function()
+        {
+            var results = variable.eval({ foo: 'bar' });
+
+            // Ensure we populated value correctly
+            expect(results.value).to.equal('bar');
+        });
+
+        it('throws an error if the variable is not found in the scope', function()
+        {
+            expect(variable.eval.bind(variable)).to.throw("Variable '" + variable.name + "' not found in scope.");
+        });
+    });
 });
 
 // ---------------------------------------------------------------------------------------------------------------------

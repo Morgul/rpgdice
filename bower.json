@@ -1,0 +1,19 @@
+{
+  "name": "rpgdice",
+  "main": "index.js",
+  "version": "1.0.0-alpha.1",
+  "homepage": "https://github.com/Morgul/rpgdice",
+  "authors": [
+    "Christopher S. Case <chris.case@g33xnexus.com>"
+  ],
+  "description": "A generic RPG dice roller syntax and library.",
+  "moduleType": [
+    "node"
+  ],
+  "keywords": [
+    "dice",
+    "rpg",
+    "roller"
+  ],
+  "license": "MIT"
+}
