@@ -134,13 +134,24 @@ describe('Dice Syntax Parser', function()
 
         it('supports quoted variable names', function()
         {
-            var results = parser.parse('\'var with spaces\'');
+            var results = parser.parse("'var with spaces'");
             expect(results.type).to.equal('variable');
             expect(results.name).to.equal('var with spaces');
 
             results = parser.parse('[var with spaces]');
             expect(results.type).to.equal('variable');
             expect(results.name).to.equal('var with spaces');
+        });
+
+        it('supports (escaped) nested variables', function()
+        {
+            var results = parser.parse("'foo.bar.0.baz'");
+            expect(results.type).to.equal('variable');
+            expect(results.name).to.equal('foo.bar.0.baz');
+
+            results = parser.parse('[foo.bar.0.baz]');
+            expect(results.type).to.equal('variable');
+            expect(results.name).to.equal('foo.bar.0.baz');
         });
     });
 

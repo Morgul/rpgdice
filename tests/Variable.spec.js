@@ -14,10 +14,11 @@ var Variable = require('../lib/Variable');
 
 describe('Variable Class', function()
 {
-    var variable, escapedVar;
+    var variable, nestedVar, escapedVar;
     beforeEach(function()
     {
         variable = new Variable('foo');
+        nestedVar = new Variable("foo.bar.0.baz");
         escapedVar = new Variable('This is a var!');
     });
 
@@ -43,6 +44,12 @@ describe('Variable Class', function()
 
             // Ensure we populated value correctly
             expect(results.value).to.equal('bar');
+        });
+
+        it('supports nested variables', function()
+        {
+            var results = nestedVar.eval({ foo: { bar: [ { baz: 23 } ] } });
+            expect(results.value).to.equal(23);
         });
 
         it('throws an error if the variable is not found in the scope', function()
