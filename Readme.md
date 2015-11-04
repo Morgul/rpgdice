@@ -71,7 +71,8 @@ This expression calls `rollLoaded(6)` three times, and then adds `4`. It's the e
 rolling logic has been replaced by your loaded dice rules. Functions get the full results object, which includes the
 parse tree for each expression they get as an argument, which means functions can be incredibly powerful.
 
-_If you would like to dive further into the syntax, please check out our [Syntax Documentation]()._
+_If you would like to dive further into the syntax, please check out our 
+[Syntax Documentation](https://github.com/Morgul/rpgdice/wiki/Syntax-Documentation)._
 
 ## API
 
@@ -109,4 +110,5 @@ rpgDice.parse('3(4d10 - 2)')
     });
 ```
 
-_For more details on the API, please check out our [API Documentation]()._
+_For more details on the API, please check out our 
+[API Documentation](https://github.com/Morgul/rpgdice/wiki/API-Documentation)._
