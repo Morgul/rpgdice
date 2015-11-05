@@ -1,5 +1,7 @@
 # RPGDice
 
+![Build Status](https://travis-ci.org/Morgul/rpgdice.svg)
+
 This project is an opinionated dice syntax and roller library designed to be used for any dice-based RPG system. Its
 main goal is to use a straightforward, easy to use grammar that has enough flexibility to allow players to easily
 codify their dice rolls. One of its central features, the ability to use variables, exists to facilitate a 'write once'
