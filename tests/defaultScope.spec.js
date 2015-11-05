@@ -56,6 +56,26 @@ describe('Default Scope', function()
 
     describe('Built-in functions', function()
     {
+        describe('min()', function()
+        {
+            it('performs a min on the two passed in expressions', function()
+            {
+                var expr = parser.parse('min(5,2)');
+                var results = expr.eval();
+                expect(results.value).to.equal(2);
+            });
+        });
+
+        describe('max()', function()
+        {
+            it('performs a max on the two passed in expressions', function()
+            {
+                var expr = parser.parse('max(5,2)');
+                var results = expr.eval();
+                expect(results.value).to.equal(5);
+            });
+        });
+
         describe('floor()', function()
         {
             it('performs a floor on the results of any operation', function()
