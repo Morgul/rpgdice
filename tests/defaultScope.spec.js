@@ -63,6 +63,10 @@ describe('Default Scope', function()
                 var expr = parser.parse('min(5,2)');
                 var results = expr.eval();
                 expect(results.value).to.equal(2);
+
+                expr = parser.parse('10 + min(foo, 2)');
+                results = expr.eval({ foo: 5 });
+                expect(results.value).to.equal(12);
             });
         });
 
@@ -73,6 +77,10 @@ describe('Default Scope', function()
                 var expr = parser.parse('max(5,2)');
                 var results = expr.eval();
                 expect(results.value).to.equal(5);
+
+                expr = parser.parse('10 + max(foo, 2)');
+                results = expr.eval({ foo: 5 });
+                expect(results.value).to.equal(15);
             });
         });
 
