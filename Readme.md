@@ -24,7 +24,9 @@ leveraging some basic programing concepts, like the [principal of least surprise
 [dice notation]: http://en.wikipedia.org/wiki/Dice_notation
 [pola]: http://en.wikipedia.org/wiki/Principle_of_least_astonishment
 
-## Syntax Summary
+## Usage
+
+### Syntax Summary
 
 `d20 + floor(level / 2) + floor(('strength.score' - 10) / 2) + proficiency + 'Weapon Enhancement' + [Misc.Attack.Bonus]`
 
@@ -77,7 +79,7 @@ parse tree for each expression they get as an argument, which means functions ca
 _If you would like to dive further into the syntax, please check out our 
 [Syntax Documentation](https://github.com/Morgul/rpgdice/wiki/Syntax-Documentation)._
 
-## API
+### API
 
 The API for rolling dice is super simple. There are exactly 2 functions, `rpgdice.parse()` and `rpgdice.eval()`. Each
 take a dice string to parse, and only differ in what they output; `parse()` simply returns you the tokenized roll as a 
@@ -109,7 +111,7 @@ var eval = rpgDice.parse('3(4d10 - 2)')
 var results = rpgDice.roll(eval);
 ```
 
-### Expression API
+#### Expression API
 
 The results of `rpgdice.parse()` and `rpgdice.eval()` are `Expression` objects. These represent the parse tree of the 
 expression. While for a general use case you won't need the power they provide, they do expose a few useful functions:
