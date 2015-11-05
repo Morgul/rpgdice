@@ -24,14 +24,15 @@ leveraging some basic programing concepts, like the [principal of least surprise
 
 ## Syntax Summary
 
-`d20 + floor(level / 2) + floor((strength - 10) / 2) + proficiency + weaponEnhancement`
+`d20 + floor(level / 2) + floor(('strength.score' - 10) / 2) + proficiency + 'Weapon Enhancement' + [Misc.Attack.Bonus]`
 
 As you can see, the syntax is very nearly a super-simplified version of javascript. It supports standard order of
-operations, `XdY` for rolls, function calls, and variables. (This particular roll is the formula for a D&D 4e attack.)
+operations, `XdY` for rolls, function calls, and variables. (This particular roll is the formula for a D&D 4e attack, 
+with the added pathology of showing all the various ways of escaping variables.)
 
 When you make a roll, you will pass in a `scope` object, which RPGDice will use to look up all variables and functions.
-By default, we provide several mathematical functions, such as `floor()`, `ceil()`, `round()`. Additionally, we provide
-some common RPG rules: `explode()`, `dropLowest()`, `dropHighest()`, `reroll()`.
+By default, we provide several mathematical functions, such as `min()`, `max()`, `floor()`, `ceil()`, `round()`. 
+Additionally, we provide some common RPG rules: `explode()`, `dropLowest()`, `dropHighest()`, `reroll()`.
 
 If you set a variable on the `scope` to a function, but reference it without parenthesis, RPGDice will call it, passing
 in no arguments. Ex: `3d8 + strMod`, where `strMod` was defined as:
@@ -76,39 +77,44 @@ _If you would like to dive further into the syntax, please check out our
 
 ## API
 
-The API for rolling dice is super simple. There are exactly 2 functions, `rpgdice.parse()` and `rpgdice.roll()`. Each
-take a dice string to parse, and only differ in what they output; `parse()` simply returns you the tokenized roll, while
-`roll()` will return you the parse tree including results. (Additionally, `roll()` can take the results of `parse()`, not
-just a string.)
+The API for rolling dice is super simple. There are exactly 2 functions, `rpgdice.parse()` and `rpgdice.eval()`. Each
+take a dice string to parse, and only differ in what they output; `parse()` simply returns you the tokenized roll as a 
+parse tree, while `eval()` will return you a populated version of the parse tree. (The final result is in the `value`
+property of the root node.) Additionally, `roll()` can take a parse tree (such as the results of `parse()`) not just a 
+string. This allows for a small optimization by only needing to tokenize the expression once, and calling `eval()` 
+multiple times.
 
 Here's a few examples:
 
 ```javascript
 // Roll a simple equation
-rpgDice.roll('3d6 + 4')
-    .then(function(results)
-    {
-        // Pretty-print the results
-        console.log('Results:', results.prettyPrint());
+var results = rpgDice.roll('3d6 + 4');
 
-        // Print the total:
-        console.log('Total:', results.value);
-    });
+// Render the results as a string
+console.log('Results:', results.render());
+
+// Print the final result:
+console.log('Total:', results.value);
 
 //----------------------------------------------------------------
 
 // Evaluate an expression
-rpgDice.parse('3(4d10 - 2)')
-    .then(function(eval)
-    {
-        // Do work with the eval object...
-    })
-    .then(function(eval)
-    {
-        // Now, get the results for this roll
-        var results = rpgDice.roll(eval);
-    });
+var eval = rpgDice.parse('3(4d10 - 2)')
+
+// Maybe do something with the evaluated expresion
+
+// Now, get the results for this roll
+var results = rpgDice.roll(eval);
 ```
+
+### Expression API
+
+The results of `rpgdice.parse()` and `rpgdice.eval()` are `Expression` objects. These represent the parse tree of the 
+expression. While for a general use case you won't need the power they provide, they do expose a few useful functions:
+
+* `render()` - Renders a parse tree to a string. If the parse tree has been evaluated, it includes the intermediate results.
+* `eval()` - Evaluates the parse tree from this node down. (This is the same as passing the `Expression` object to `rpgdice.eval()`.
+
 
 _For more details on the API, please check out our 
 [API Documentation](https://github.com/Morgul/rpgdice/wiki/API-Documentation)._
