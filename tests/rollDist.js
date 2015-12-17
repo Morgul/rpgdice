@@ -30,7 +30,7 @@ var expectedCount = Math.floor(ITERATIONS / SIDES);
 // Report to the user
 console.log('Raw: %j', results);
 
-var variances = _.transform(results, (accum, val, key) =>
+var variances = _.transform(results, function(accum, val, key)
 {
     accum[key] = (((val - expectedCount) / expectedCount) * 100).toFixed(2);
 });
