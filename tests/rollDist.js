@@ -16,10 +16,10 @@ var ITERATIONS = 10000000;
 
 // Populate result object
 var results = {};
-_.each(_.range(1, SIDES + 1), (side) => { results[side] = 0; });
+_.each(_.range(1, SIDES + 1), function(side) { results[side] = 0; });
 
 // Collect results
-_.each(_.range(0, ITERATIONS), () =>
+_.each(_.range(0, ITERATIONS), function()
 {
     var roll = dice.rollDie(SIDES);
     results[roll] += 1;
