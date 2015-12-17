@@ -1,6 +1,6 @@
 {
   "name": "rpgdicejs",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "A generic RPG dice roller syntax and library.",
   "main": "index.js",
   "scripts": {
