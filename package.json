@@ -14,9 +14,7 @@
   ],
   "author": "Christopher S. Case <chris.case@g33xnexus.com>",
   "license": "MIT",
-  "dependencies": {
-    "lodash": "^4.17.11"
-  },
+  "dependencies": {},
   "devDependencies": {
     "acorn": "^6.0.4",
     "browserify": "^16.2.3",
