@@ -1,27 +1,24 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Unit Tests for the defaultScope.js module.
-//
-// @module defaultScope.spec.js
 // ---------------------------------------------------------------------------------------------------------------------
-"use strict";
 
-var chai = require('chai');
-var spies = require('chai-spies');
+const chai = require('chai');
+const spies = require('chai-spies');
 
 chai.use(spies);
 
-var expect = chai.expect;
-var proxyquire = require('proxyquire');
+const { expect } = chai;
+const proxyquire = require('proxyquire');
 
-var rollDie = require('../lib/rolldie');
-var parser = require('../lib/parser');
+const rollDie = require('../lib/rolldie');
+const parser = require('../lib/parser');
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-describe('Default Scope', function()
+describe('Default Scope', () =>
 {
-    var rollDieMock, defaultScope;
-    beforeEach(function()
+    let rollDieMock, defaultScope;
+    beforeEach(() =>
     {
         rollDieMock = {
             rollDie: chai.spy(rollDie.rollDie)
@@ -30,38 +27,38 @@ describe('Default Scope', function()
         defaultScope = proxyquire('../lib/defaultScope', { './rolldie': rollDieMock });
     });
 
-    afterEach(function()
+    afterEach(() =>
     {
         rollDieMock = {};
     });
 
-    it('builds a scope that includes default functions', function()
+    it('builds a scope that includes default functions', () =>
     {
-        var scope = defaultScope.buildDefaultScope({ foo: 3 });
+        const scope = defaultScope.buildDefaultScope({ foo: 3 });
         expect(scope.floor).to.be.an.instanceOf(Function);
         expect(scope.foo).to.equal(3);
     });
 
-    it('supports not passing in a scope', function()
+    it('supports not passing in a scope', () =>
     {
-        var scope = defaultScope.buildDefaultScope();
+        const scope = defaultScope.buildDefaultScope();
         expect(scope.floor).to.be.an.instanceOf(Function);
     });
 
-    it('allows you to overwrite default functions', function()
+    it('allows you to overwrite default functions', () =>
     {
-        var scope = defaultScope.buildDefaultScope({ floor: 3 });
+        const scope = defaultScope.buildDefaultScope({ floor: 3 });
         expect(scope.floor).to.equal(3);
     });
 
-    describe('Built-in functions', function()
+    describe('Built-in functions', () =>
     {
-        describe('min()', function()
+        describe('min()', () =>
         {
-            it('performs a min on the two passed in expressions', function()
+            it('performs a min on the two passed in expressions', () =>
             {
-                var expr = parser.parse('min(5,2)');
-                var results = expr.eval();
+                let expr = parser.parse('min(5,2)');
+                let results = expr.eval();
                 expect(results.value).to.equal(2);
 
                 expr = parser.parse('10 + min(foo, 2)');
@@ -70,12 +67,12 @@ describe('Default Scope', function()
             });
         });
 
-        describe('max()', function()
+        describe('max()', () =>
         {
-            it('performs a max on the two passed in expressions', function()
+            it('performs a max on the two passed in expressions', () =>
             {
-                var expr = parser.parse('max(5,2)');
-                var results = expr.eval();
+                let expr = parser.parse('max(5,2)');
+                let results = expr.eval();
                 expect(results.value).to.equal(5);
 
                 expr = parser.parse('10 + max(foo, 2)');
@@ -84,12 +81,12 @@ describe('Default Scope', function()
             });
         });
 
-        describe('floor()', function()
+        describe('floor()', () =>
         {
-            it('performs a floor on the results of any operation', function()
+            it('performs a floor on the results of any operation', () =>
             {
-                var expr = parser.parse('floor(5/2)');
-                var results = expr.eval();
+                let expr = parser.parse('floor(5/2)');
+                let results = expr.eval();
                 expect(results.value).to.equal(2);
 
                 expr = parser.parse('floor(3d6 / 2)');
@@ -99,12 +96,12 @@ describe('Default Scope', function()
             });
         });
 
-        describe('ceil()', function()
+        describe('ceil()', () =>
         {
-            it('performs a ceil on the results of any operation', function()
+            it('performs a ceil on the results of any operation', () =>
             {
-                var expr = parser.parse('ceil(5/2)');
-                var results = expr.eval();
+                let expr = parser.parse('ceil(5/2)');
+                let results = expr.eval();
                 expect(results.value).to.equal(3);
 
                 expr = parser.parse('ceil(3d6 / 2)');
@@ -114,12 +111,12 @@ describe('Default Scope', function()
             });
         });
 
-        describe('round()', function()
+        describe('round()', () =>
         {
-            it('performs a round on the results of any operation', function()
+            it('performs a round on the results of any operation', () =>
             {
-                var expr = parser.parse('round(5/2)');
-                var results = expr.eval();
+                let expr = parser.parse('round(5/2)');
+                let results = expr.eval();
                 expect(results.value).to.equal(3);
 
                 expr = parser.parse('round(3d6 / 2)');
@@ -129,90 +126,90 @@ describe('Default Scope', function()
             });
         });
 
-        describe('explode()', function()
+        describe('explode()', () =>
         {
-            it('rolls the expression again every time the value equals the maximum, summing the results', function()
+            it('rolls the expression again every time the value equals the maximum, summing the results', () =>
             {
-                var expr = parser.parse('explode(1d6)');
-                var rolls = 0;
+                const expr = parser.parse('explode(1d6)');
+                let rolls = 0;
 
                 // Replace the eval function on the Roll instance.
-                expr.args[0].eval = function()
+                expr.args[0].eval = () =>
                 {
                     if(rolls < 3) { rolls++; return { sides: 6, value: 6 } }
                     else { return { sides: 6, value: 5 }; }
                 };
 
-                var results = expr.eval();
+                const results = expr.eval();
 
                 expect(results.value).to.equal(23);
                 expect(results.results.length).to.equal(4);
             });
 
-            it('throws an error if the expression is not a roll expression', function()
+            it('throws an error if the expression is not a roll expression', () =>
             {
-                var expr = parser.parse('explode(5)');
+                const expr = parser.parse('explode(5)');
                 expect(expr.eval.bind(expr)).to.throw("Non-roll passed to 'explode()': 5");
             });
         });
 
-        describe('dropLowest()', function()
+        describe('dropLowest()', () =>
         {
-            it('removes the lowest result, and sums the remainder', function()
+            it('removes the lowest result, and sums the remainder', () =>
             {
-                var expr = parser.parse('dropLowest(3d6)');
-                expr.args[0].eval = function()
+                const expr = parser.parse('dropLowest(3d6)');
+                expr.args[0].eval = () =>
                 {
                     return { results: [1, 1, 3, 4, 5] }
                 };
 
-                var results = expr.eval();
+                const results = expr.eval();
 
                 expect(results.value).to.equal(13);
                 expect(results.results.length).to.equal(4);
             });
 
-            it('throws an error if the expression is not a roll expression', function()
+            it('throws an error if the expression is not a roll expression', () =>
             {
-                var expr = parser.parse('dropLowest(5)');
+                const expr = parser.parse('dropLowest(5)');
                 expect(expr.eval.bind(expr)).to.throw("Non-roll passed to 'dropLowest()': 5");
             });
         });
 
-        describe('dropHighest()', function()
+        describe('dropHighest()', () =>
         {
-            it('removes the highest result, and sums the remainder', function()
+            it('removes the highest result, and sums the remainder', () =>
             {
-                var expr = parser.parse('dropHighest(3d6)');
-                expr.args[0].eval = function()
+                const expr = parser.parse('dropHighest(3d6)');
+                expr.args[0].eval = () =>
                 {
                     return { results: [1, 1, 3, 4, 5] }
                 };
 
-                var results = expr.eval();
+                const results = expr.eval();
 
                 expect(results.value).to.equal(9);
                 expect(results.results.length).to.equal(4);
             });
 
-            it('throws an error if the expression is not a roll expression', function()
+            it('throws an error if the expression is not a roll expression', () =>
             {
-                var expr = parser.parse('dropHighest(5)');
+                const expr = parser.parse('dropHighest(5)');
                 expect(expr.eval.bind(expr)).to.throw("Non-roll passed to 'dropHighest()': 5");
             });
         });
 
-        describe('rerollAbove()', function()
+        describe('rerollAbove()', () =>
         {
-            it('rerolls any dice above the give maximum', function()
+            it('rerolls any dice above the give maximum', () =>
             {
-                var expr = parser.parse('rerollAbove(4, 5d6)');
-                expr.args[1].eval = function()
+                const expr = parser.parse('rerollAbove(4, 5d6)');
+                expr.args[1].eval = () =>
                 {
                     return { results: [1, 1, 3, 4, 5], sides: 6, count: 5 }
                 };
 
-                var results = expr.eval(defaultScope.defaultScope);
+                const results = expr.eval(defaultScope.defaultScope);
                 expect(results.results.length).to.equal(5);
                 expect(rollDieMock.rollDie).to.have.been.called.exactly(2);
                 expect(results.results[0]).to.equal(1);
@@ -220,30 +217,30 @@ describe('Default Scope', function()
                 expect(results.results[2]).to.equal(3);
             });
 
-            it('throws an error if the expression is not a roll expression', function()
+            it('throws an error if the expression is not a roll expression', () =>
             {
-                var expr = parser.parse('rerollAbove(1, 5)');
+                const expr = parser.parse('rerollAbove(1, 5)');
                 expect(expr.eval.bind(expr)).to.throw("Non-roll passed to 'rerollAbove()': 5");
             });
 
-            it('throws an error if the maximum value is not a number', function()
+            it('throws an error if the maximum value is not a number', () =>
             {
-                var expr = parser.parse('rerollAbove(foo, 5d6)');
-                expect(function(){ expr.eval({ foo: 'bleh' }); }).to.throw("Non-finite number passed to 'rerollAbove()': bleh");
+                const expr = parser.parse('rerollAbove(foo, 5d6)');
+                expect(() =>{ expr.eval({ foo: 'bleh' }); }).to.throw("Non-finite number passed to 'rerollAbove()': bleh");
             });
         });
 
-        describe('rerollBelow()', function()
+        describe('rerollBelow()', () =>
         {
-            it('rerolls any results below the given minimum', function()
+            it('rerolls any results below the given minimum', () =>
             {
-                var expr = parser.parse('rerollBelow(1, 5d6)');
-                expr.args[1].eval = function()
+                const expr = parser.parse('rerollBelow(1, 5d6)');
+                expr.args[1].eval = () =>
                 {
                     return { results: [1, 1, 3, 4, 5], sides: 6, count: 5 }
                 };
 
-                var results = expr.eval(defaultScope.defaultScope);
+                const results = expr.eval(defaultScope.defaultScope);
                 expect(results.results.length).to.equal(5);
                 expect(rollDieMock.rollDie).to.have.been.called.exactly(2);
                 expect(results.results[2]).to.equal(3);
@@ -251,16 +248,16 @@ describe('Default Scope', function()
                 expect(results.results[4]).to.equal(5);
             });
 
-            it('throws an error if the expression is not a roll expression', function()
+            it('throws an error if the expression is not a roll expression', () =>
             {
-                var expr = parser.parse('rerollBelow(1, 5)');
+                const expr = parser.parse('rerollBelow(1, 5)');
                 expect(expr.eval.bind(expr)).to.throw("Non-roll passed to 'rerollBelow()': 5");
             });
 
-            it('throws an error if the minimum value is not a number', function()
+            it('throws an error if the minimum value is not a number', () =>
             {
-                var expr = parser.parse('rerollBelow(foo, 5d6)');
-                expect(function(){ expr.eval({ foo: 'bleh' }); }).to.throw("Non-finite number passed to 'rerollBelow()': bleh");
+                const expr = parser.parse('rerollBelow(foo, 5d6)');
+                expect(() =>{ expr.eval({ foo: 'bleh' }); }).to.throw("Non-finite number passed to 'rerollBelow()': bleh");
             });
         });
     });

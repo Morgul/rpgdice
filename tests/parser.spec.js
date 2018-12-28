@@ -1,33 +1,30 @@
 // ---------------------------------------------------------------------------------------------------------------------
-// Unit Tests for the parser.spec.js module.
-//
-// @module parser.spec.js
+// Unit Tests for the parser.js module.
 // ---------------------------------------------------------------------------------------------------------------------
-"use strict";
 
-var expect = require('chai').expect;
+const { expect } = require('chai');
 
-var parser = require('../lib/parser');
+const parser = require('../lib/parser');
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-describe('Dice Syntax Parser', function()
+describe('Dice Syntax Parser', () =>
 {
 
-    describe('Dice Syntax', function()
+    describe('Dice Syntax', () =>
     {
-        it('supports `XdY` dice format', function()
+        it('supports `XdY` dice format', () =>
         {
-            var results = parser.parse('3d6');
+            const results = parser.parse('3d6');
 
             expect(results.type).to.equal('roll');
             expect(results.count).to.equal(3);
             expect(results.sides).to.equal(6);
         });
 
-        it('assumes 1 if you only specify `dY`', function()
+        it('assumes 1 if you only specify `dY`', () =>
         {
-            var results = parser.parse('d6');
+            const results = parser.parse('d6');
 
             expect(results.type).to.equal('roll');
             expect(results.count).to.equal(1);
@@ -35,47 +32,47 @@ describe('Dice Syntax Parser', function()
         });
     });
 
-    describe('Mathematical Operations', function()
+    describe('Mathematical Operations', () =>
     {
-        it('supports addition', function()
+        it('supports addition', () =>
         {
-            var results = parser.parse('3d6 + 4');
+            const results = parser.parse('3d6 + 4');
 
             expect(results.type).to.equal('add');
             expect(results.left).to.have.property('type', 'roll');
             expect(results.right).to.have.property('type', 'number');
         });
 
-        it('supports subtraction', function()
+        it('supports subtraction', () =>
         {
-            var results = parser.parse('3d6 - 4');
+            const results = parser.parse('3d6 - 4');
 
             expect(results.type).to.equal('subtract');
             expect(results.left).to.have.property('type', 'roll');
             expect(results.right).to.have.property('type', 'number');
         });
 
-        it('supports multiplication', function()
+        it('supports multiplication', () =>
         {
-            var results = parser.parse('3d6 * 4');
+            const results = parser.parse('3d6 * 4');
 
             expect(results.type).to.equal('multiply');
             expect(results.left).to.have.property('type', 'roll');
             expect(results.right).to.have.property('type', 'number');
         });
 
-        it('supports division', function()
+        it('supports division', () =>
         {
-            var results = parser.parse('3d6 / 4');
+            const results = parser.parse('3d6 / 4');
 
             expect(results.type).to.equal('divide');
             expect(results.left).to.have.property('type', 'roll');
             expect(results.right).to.have.property('type', 'number');
         });
 
-        it('supports order of operations', function()
+        it('supports order of operations', () =>
         {
-            var results = parser.parse('3 + 2 - 5 * 4 / 6');
+            let results = parser.parse('3 + 2 - 5 * 4 / 6');
             expect(results).to.have.property('type', 'add');
             expect(results).to.have.nested.property('left.value', 3);
             expect(results).to.have.nested.property('right.type', 'subtract');
@@ -99,11 +96,11 @@ describe('Dice Syntax Parser', function()
         });
     });
 
-    describe('Grouping', function()
+    describe('Grouping', () =>
     {
-        it('grouping overrides order of operations', function()
+        it('grouping overrides order of operations', () =>
         {
-            var results = parser.parse('(3 + 2) * 4');
+            const results = parser.parse('(3 + 2) * 4');
             expect(results).to.have.property('type', 'multiply');
             expect(results).to.have.nested.property('left.type', 'add');
             expect(results).to.have.nested.property('left.left.value', 3);
@@ -111,19 +108,19 @@ describe('Dice Syntax Parser', function()
             expect(results).to.have.nested.property('right.value', 4);
         });
 
-        it('supports implicit repeats with `X(...)`', function()
+        it('supports implicit repeats with `X(...)`', () =>
         {
-            var results = parser.parse('3(2d6 + 4)');
+            const results = parser.parse('3(2d6 + 4)');
             expect(results.type).to.equal('repeat');
             expect(results.count).to.equal(3);
         });
     });
 
-    describe('Variables', function()
+    describe('Variables', () =>
     {
-        it('supports standard variable names', function()
+        it('supports standard variable names', () =>
         {
-            var results = parser.parse('foobar');
+            let results = parser.parse('foobar');
             expect(results.type).to.equal('variable');
             expect(results.name).to.equal('foobar');
 
@@ -132,9 +129,9 @@ describe('Dice Syntax Parser', function()
             expect(results.name).to.equal('fooBar239875');
         });
 
-        it('supports quoted variable names', function()
+        it('supports quoted variable names', () =>
         {
-            var results = parser.parse("'var with spaces'");
+            let results = parser.parse('\'var with spaces\'');
             expect(results.type).to.equal('variable');
             expect(results.name).to.equal('var with spaces');
 
@@ -143,9 +140,9 @@ describe('Dice Syntax Parser', function()
             expect(results.name).to.equal('var with spaces');
         });
 
-        it('supports (escaped) nested variables', function()
+        it('supports (escaped) nested variables', () =>
         {
-            var results = parser.parse("'foo.bar.0.baz'");
+            let results = parser.parse('\'foo.bar.0.baz\'');
             expect(results.type).to.equal('variable');
             expect(results.name).to.equal('foo.bar.0.baz');
 
@@ -155,11 +152,11 @@ describe('Dice Syntax Parser', function()
         });
     });
 
-    describe('Functions', function()
+    describe('Functions', () =>
     {
-        it('supports functions', function()
+        it('supports functions', () =>
         {
-            var results = parser.parse('foobar(2d6)');
+            const results = parser.parse('foobar(2d6)');
             expect(results.type).to.equal('function');
             expect(results.name).to.equal('foobar');
             expect(results).to.have.nested.property('args.length', 1);
@@ -167,16 +164,16 @@ describe('Dice Syntax Parser', function()
             expect(results).to.have.nested.property('args[0].sides', 6);
         });
 
-        it('supports functions with no arguments', function()
+        it('supports functions with no arguments', () =>
         {
-            var results = parser.parse('foobar()');
+            const results = parser.parse('foobar()');
             expect(results.type).to.equal('function');
             expect(results.name).to.equal('foobar');
         });
 
-        it('supports functions with multiple arguments', function()
+        it('supports functions with multiple arguments', () =>
         {
-            var results = parser.parse('foobar(2d6, 3)');
+            const results = parser.parse('foobar(2d6, 3)');
             expect(results.type).to.equal('function');
             expect(results.name).to.equal('foobar');
             expect(results).to.have.nested.property('args.length', 2);
@@ -186,9 +183,9 @@ describe('Dice Syntax Parser', function()
             expect(results).to.have.nested.property('args[1].value', 3);
         });
 
-        it('supports quoted names for functions', function()
+        it('supports quoted names for functions', () =>
         {
-            var results = parser.parse('\'func with spaces\'(2d6)');
+            const results = parser.parse('\'func with spaces\'(2d6)');
             expect(results.type).to.equal('function');
             expect(results.name).to.equal('func with spaces');
         });

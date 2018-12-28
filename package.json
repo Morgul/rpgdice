@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "peg": "pegjs --format commonjs -o lib/parser.js grammar/dice.pegjs",
-    "test": "mocha tests --reporter spec --recursive"
+    "test": "mocha ./tests/**/*.spec.js --reporter spec --recursive"
   },
   "keywords": [
     "dice",

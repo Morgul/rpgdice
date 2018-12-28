@@ -1,53 +1,50 @@
 // ---------------------------------------------------------------------------------------------------------------------
-// Unit Tests for the Repeat.spec.js module.
-//
-// @module Repeat.spec.js
+// Unit Tests for the Repeat class.
 // ---------------------------------------------------------------------------------------------------------------------
-"use strict";
 
-var expect = require('chai').expect;
+const { expect } = require('chai');
 
-var parser = require('../lib/parser');
-var Repeat = require('../lib/Repeat');
-var Num = require('../lib/Number');
-var Roll = require('../lib/Roll');
+const parser = require('../lib/parser');
+const Repeat = require('../lib/Repeat');
+const Num = require('../lib/Number');
+const Roll = require('../lib/Roll');
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-describe('Repeat Class', function()
+describe('Repeat Class', () =>
 {
-    var repeat;
-    beforeEach(function()
+    let repeat;
+    beforeEach(() =>
     {
         repeat = new Repeat(3, new Roll(3, 6));
     });
 
-    it('can be converted to json', function()
+    it('can be converted to json', () =>
     {
         expect(JSON.stringify(repeat)).to.equal('{"type":"repeat","count":3,"right":{"type":"roll","count":3,"sides":6,"results":[]}}');
     });
 
-    it('can be converted to a parsable string', function()
+    it('can be converted to a parsable string', () =>
     {
         expect(repeat.toString()).to.equal('3(3d6)');
         expect(parser.parse(repeat.toString())).to.deep.equal(repeat);
     });
 
-    describe('#eval()', function()
+    describe('#eval()', () =>
     {
-        it('returns itself with the value populated', function()
+        it('returns itself with the value populated', () =>
         {
             repeat = new Repeat(3, new Num(5));
-            var results = repeat.eval();
+            const results = repeat.eval();
 
             expect(results.value).to.exist;
             expect(results.value).to.equal(15);
         });
 
-        it('stores the results of each iteration in the `results` property', function()
+        it('stores the results of each iteration in the `results` property', () =>
         {
             repeat = new Repeat(3, new Num(5));
-            var results = repeat.eval();
+            const results = repeat.eval();
 
             expect(results.value).to.exist;
             expect(results.results.length).to.equal(3);
