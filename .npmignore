@@ -2,6 +2,8 @@
 !dist
 
 # Slim down the package on npm some.
+.cache
+.idea
 .travis.yml
 grammar
 tests
