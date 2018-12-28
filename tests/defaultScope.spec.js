@@ -229,7 +229,7 @@ describe('Default Scope', function()
             it('throws an error if the maximum value is not a number', function()
             {
                 var expr = parser.parse('rerollAbove(foo, 5d6)');
-                expect(function(){ expr.eval({ foo: 'bleh' }); }).to.throw("Non-number passed to 'rerollAbove()': bleh");
+                expect(function(){ expr.eval({ foo: 'bleh' }); }).to.throw("Non-finite number passed to 'rerollAbove()': bleh");
             });
         });
 
@@ -260,7 +260,7 @@ describe('Default Scope', function()
             it('throws an error if the minimum value is not a number', function()
             {
                 var expr = parser.parse('rerollBelow(foo, 5d6)');
-                expect(function(){ expr.eval({ foo: 'bleh' }); }).to.throw("Non-number passed to 'rerollBelow()': bleh");
+                expect(function(){ expr.eval({ foo: 'bleh' }); }).to.throw("Non-finite number passed to 'rerollBelow()': bleh");
             });
         });
     });

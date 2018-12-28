@@ -1,35 +1,25 @@
 //----------------------------------------------------------------------------------------------------------------------
-// Brief description for index.js module.
-//
-// @module index.js
+// RPGDice
 //----------------------------------------------------------------------------------------------------------------------
-"use strict";
 
-var _ = require('lodash');
-
-var parser = require('./lib/parser');
+const { parse } = require('./lib/parser');
 
 //----------------------------------------------------------------------------------------------------------------------
 
 module.exports = {
-    parse: function(expr)
+    parse(expr)
     {
-        return parser.parse(expr);
+        return parse(expr);
     },
-    eval: function(expr, scope)
+    eval(expr, scope)
     {
-        if(_.isString(expr))
+        if(typeof expr === 'string')
         {
-            expr = parser.parse(expr);
+            expr = parse(expr);
         } // end if
 
         return expr.eval(scope);
     }
 }; // end exports
-
-if(typeof window !== 'undefined')
-{
-    window.rpgdice = module.exports;
-} // end if
 
 //----------------------------------------------------------------------------------------------------------------------
