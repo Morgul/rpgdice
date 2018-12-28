@@ -14,7 +14,9 @@
   ],
   "author": "Christopher S. Case <chris.case@g33xnexus.com>",
   "license": "MIT",
-  "dependencies": {},
+  "dependencies": {
+    "randombytes": "^2.0.6"
+  },
   "devDependencies": {
     "chai": "^4.2.0",
     "chai-spies": "^1.0.0",
