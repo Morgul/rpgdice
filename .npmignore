@@ -1,5 +1,7 @@
+# We want to publish the dist file in the npm package
+!dist
+
 # Slim down the package on npm some.
 .travis.yml
-dist
 grammar
 tests

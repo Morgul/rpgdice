@@ -5,6 +5,7 @@
 
 # build artifacts
 .cache
+dist
 
 # Node artifacts
 node_modules
