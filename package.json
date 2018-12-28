@@ -8,6 +8,7 @@
     "clean": "rimraf dist/*",
     "peg": "pegjs --format commonjs -o lib/parser.js grammar/dice.pegjs",
     "build": "npm run clean && npm run peg && parcel build index.js --out-file rpgdice.min.js --global rpgdice --detailed-report",
+    "prepublishOnly": "npm run build",
     "test": "mocha ./tests/**/*.spec.js --reporter spec --recursive"
   },
   "keywords": [
