@@ -17,6 +17,10 @@
   ],
   "author": "Christopher S. Case <chris.case@g33xnexus.com>",
   "license": "MIT",
+  "engineStrict" : true,
+  "engines": {
+    "node": ">= 6.0.0"
+  },
   "dependencies": {
     "randombytes": "^2.0.6"
   },
