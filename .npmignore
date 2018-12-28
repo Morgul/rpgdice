@@ -1,0 +1,5 @@
+# Slim down the package on npm some.
+.travis.yml
+dist
+grammar
+tests

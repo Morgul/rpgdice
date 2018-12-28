@@ -4,7 +4,7 @@
 .idea
 
 # build artifacts
-dist
+.cache
 
 # Node artifacts
 node_modules
