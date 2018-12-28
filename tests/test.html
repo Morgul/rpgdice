@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang = "en">
+    <head>
+        <meta charset = "UTF-8">
+        <title>RPGDice Test</title>
+        <script src="/dist/rpgdice.min.js"></script>
+    </head>
+    <body>
+        <h1>RPGDice Test</h1>
+        <p>
+            Just enter a roll syntax below, and we'll roll it, and spit out the results.
+        </p>
+
+        <input id="diceInput" placeholder="1d6 + 1">
+        <button id="rollBtn" onclick="rollDice()">Roll!</button>
+
+        <h4>Output</h4>
+        <code><pre id="rollHist">Not rolls yet...</pre></code>
+
+        <script>
+            window.rollDice = function()
+            {
+                const rollText = document.getElementById('diceInput').value;
+                const rollHistElem = document.getElementById('rollHist');
+                const results = rpgdice.eval(rollText);
+                rollHistElem.innerHTML = `${ results.render() } = <b>${ results.value }</b>`;
+            }
+        </script>
+    </body>
+</html>

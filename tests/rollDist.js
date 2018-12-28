@@ -1,39 +1,40 @@
 //----------------------------------------------------------------------------------------------------------------------
-/// A simple test for uniform distributions.
-///
-/// @module
+// A simple test for uniform distributions.
 //----------------------------------------------------------------------------------------------------------------------
 
-var _ = require('lodash');
-var dice = require('../lib/rolldie');
+const dice = require('../lib/rolldie');
+const { range } = require('../lib/utils');
 
 //----------------------------------------------------------------------------------------------------------------------
 
-var SIDES = 20;
-var ITERATIONS = 10000000;
+const SIDES = 20;
+const ITERATIONS = 10000000;
 
 //----------------------------------------------------------------------------------------------------------------------
 
 // Populate result object
-var results = {};
-_.each(_.range(1, SIDES + 1), function(side) { results[side] = 0; });
+const results = {};
+range(1, SIDES + 1).forEach((side) => { results[side] = 0; });
 
 // Collect results
-_.each(_.range(0, ITERATIONS), function()
+range(0, ITERATIONS).forEach(() =>
 {
-    var roll = dice.rollDie(SIDES);
+    const roll = dice.rollDie(SIDES);
     results[roll] += 1;
 });
 
-var expectedCount = Math.floor(ITERATIONS / SIDES);
+const expectedCount = Math.floor(ITERATIONS / SIDES);
 
 // Report to the user
 console.log('Raw: %j', results);
 
-var variances = _.transform(results, function(accum, val, key)
+const variances = Object.keys(results).reduce((accum, key) =>
 {
+    const val = results[key];
     accum[key] = (((val - expectedCount) / expectedCount) * 100).toFixed(2);
-});
+
+    return accum;
+}, {});
 
 console.log('Variance: %j', variances);
 

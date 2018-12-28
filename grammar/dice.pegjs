@@ -1,10 +1,10 @@
 {
-	var Roll = require('./Roll');
-	var Operation = require('./Operation');
-	var Num = require('./Number');
-	var Variable = require('./Variable');
-	var Func = require('./Function');
-	var Repeat = require('./Repeat');
+	const Roll = require('./Roll');
+	const Operation = require('./Operation');
+	const Num = require('./Number');
+	const Variable = require('./Variable');
+	const Func = require('./Function');
+	const Repeat = require('./Repeat');
 }
 
 start

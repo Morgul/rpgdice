@@ -1,41 +1,38 @@
 // ---------------------------------------------------------------------------------------------------------------------
-// Unit Tests for the Roll.spec.js module.
-//
-// @module Roll.spec.js
+// Unit Tests for the Roll class.
 // ---------------------------------------------------------------------------------------------------------------------
-"use strict";
 
-var expect = require('chai').expect;
+const { expect } = require('chai');
 
-var parser = require('../lib/parser');
-var Roll = require('../lib/Roll');
+const parser = require('../lib/parser');
+const Roll = require('../lib/Roll');
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-describe('Roll Class', function()
+describe('Roll Class', () =>
 {
-    var roll;
-    beforeEach(function()
+    let roll;
+    beforeEach(() =>
     {
         roll = new Roll(3, 6);
     });
 
-    it('can be converted to json', function()
+    it('can be converted to json', () =>
     {
         expect(JSON.stringify(roll)).to.equal('{"type":"roll","count":3,"sides":6,"results":[]}');
     });
 
-    it('can be converted to a parsable string', function()
+    it('can be converted to a parsable string', () =>
     {
         expect(roll.toString()).to.equal('3d6');
         expect(parser.parse(roll.toString())).to.deep.equal(roll);
     });
 
-    describe('#eval()', function()
+    describe('#eval()', () =>
     {
-        it('returns itself with the value populated', function()
+        it('returns itself with the value populated', () =>
         {
-            var results = roll.eval();
+            const results = roll.eval();
 
             expect(results.value).to.exist;
             expect(results.value).to.be.at.least(1);
