@@ -6,6 +6,8 @@ const { expect } = require('chai');
 
 const parser = require('../lib/parser');
 const Variable = require('../lib/Variable');
+const Roll = require('../lib/Roll');
+const Operation = require('../lib/Operation');
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -52,6 +54,23 @@ describe('Variable Class', () =>
         it('throws an error if the variable is not found in the scope', () =>
         {
             expect(variable.eval.bind(variable)).to.throw("Variable '" + variable.name + "' not found in scope.");
+        });
+
+        it('expands parsable expressions', () =>
+        {
+            const results = variable.eval({ foo: '1 + 2' });
+            expect(results.expr).to.be.instanceOf(Operation);
+            expect(results.value).to.equal(3);
+
+            const results2 = variable.eval({ foo: '1d6' });
+            expect(results2.expr).to.be.instanceOf(Roll);
+            expect(results2.value).to.be.at.least(1);
+            expect(results2.value).to.be.at.most(6);
+        });
+
+        it('throws an error if evaluation becomes too deeply nested', () =>
+        {
+            expect(() => variable.eval({ foo: 'foo + 2' })).to.throw(Error).with.property('code', 'VAR_MAX_DEPTH');
         });
     });
 });
