@@ -18,17 +18,35 @@ describe('Dice Syntax Parser', () =>
             const results = parser.parse('3d6');
 
             expect(results.type).to.equal('roll');
-            expect(results.count).to.equal(3);
-            expect(results.sides).to.equal(6);
+            expect(results).to.have.nested.property('count.type', 'number');
+            expect(results).to.have.nested.property('count.value', 3);
+            expect(results).to.have.nested.property('sides.type', 'number');
+            expect(results).to.have.nested.property('sides.value', 6);
         });
 
-        it('assumes 1 if you only specify `dY`', () =>
+        it('leaves count undefined if you only specify `dY`', () =>
         {
             const results = parser.parse('d6');
 
             expect(results.type).to.equal('roll');
-            expect(results.count).to.equal(1);
-            expect(results.sides).to.equal(6);
+            expect(results.count).to.not.exist;
+            expect(results).to.have.nested.property('sides.type', 'number');
+            expect(results).to.have.nested.property('sides.value', 6);
+        });
+
+        it('supports `XdYdZ dice format as Xd(YdZ)', () =>
+        {
+            const results = parser.parse('3d1d6');
+
+            expect(results.type).to.equal('roll');
+            expect(results).to.have.nested.property('count.type', 'number');
+            expect(results).to.have.nested.property('count.value', 3);
+            expect(results).to.have.nested.property('sides.type', 'roll');
+            expect(results).to.have.nested.property('sides.count.type', 'number');
+            expect(results).to.have.nested.property('sides.count.value', 1);
+            expect(results).to.have.nested.property('sides.sides.type', 'number');
+            expect(results).to.have.nested.property('sides.sides.value', 6);
+            
         });
     });
 
@@ -70,49 +88,95 @@ describe('Dice Syntax Parser', () =>
             expect(results.right).to.have.property('type', 'number');
         });
 
+        it('supports modulo', () =>
+        {
+            const results = parser.parse('3d6 % 4');
+
+            expect(results.type).to.equal('modulo');
+            expect(results.left).to.have.property('type', 'roll');
+            expect(results.right).to.have.property('type', 'number');
+        });
+
+        it('supports exponent', () =>
+        {
+            const results = parser.parse('3d6 ^ 4');
+
+            expect(results.type).to.equal('exponent');
+            expect(results.left).to.have.property('type', 'roll');
+            expect(results.right).to.have.property('type', 'number');
+        });
+
         it('supports order of operations', () =>
         {
-            let results = parser.parse('3 + 2 - 5 * 4 / 6');
-            expect(results).to.have.property('type', 'add');
-            expect(results).to.have.nested.property('left.value', 3);
-            expect(results).to.have.nested.property('right.type', 'subtract');
-            expect(results).to.have.nested.property('right.left.value', 2);
-            expect(results).to.have.nested.property('right.right.type', 'multiply');
-            expect(results).to.have.nested.property('right.right.left.value', 5);
-            expect(results).to.have.nested.property('right.right.right.type', 'divide');
-            expect(results).to.have.nested.property('right.right.right.left.value', 4);
-            expect(results).to.have.nested.property('right.right.right.right.value', 6);
-
-            results = parser.parse('6 / 4 * 5 - 2 + 3');
+            let results = parser.parse('3 + 2 - 5 * 4 / 6 % 7 ^ 9 * (1 + 2)');
             expect(results).to.have.property('type', 'subtract');
-            expect(results).to.have.nested.property('left.type', 'divide');
-            expect(results).to.have.nested.property('left.left.value', 6);
-            expect(results).to.have.nested.property('left.right.type', 'multiply');
-            expect(results).to.have.nested.property('left.right.left.value', 4);
-            expect(results).to.have.nested.property('left.right.right.value', 5);
-            expect(results).to.have.nested.property('right.type', 'add');
-            expect(results).to.have.nested.property('right.left.value', 2);
-            expect(results).to.have.nested.property('right.right.value', 3);
+            expect(results).to.have.nested.property('left.type', 'add');
+            expect(results).to.have.nested.property('left.left.type', 'number');
+            expect(results).to.have.nested.property('left.left.value', 3);
+            expect(results).to.have.nested.property('left.right.type', 'number');
+            expect(results).to.have.nested.property('left.right.value', 2);
+            expect(results).to.have.nested.property('right.type', 'multiply');
+            expect(results).to.have.nested.property('right.left.type', 'modulo');
+            expect(results).to.have.nested.property('right.left.left.type', 'divide');
+            expect(results).to.have.nested.property('right.left.left.left.type', 'multiply');
+            expect(results).to.have.nested.property('right.left.left.left.left.type', 'number');
+            expect(results).to.have.nested.property('right.left.left.left.left.value', 5);
+            expect(results).to.have.nested.property('right.left.left.left.right.type', 'number');
+            expect(results).to.have.nested.property('right.left.left.left.right.value', 4);
+            expect(results).to.have.nested.property('right.left.left.right.type', 'number');
+            expect(results).to.have.nested.property('right.left.left.right.value', 6);
+            expect(results).to.have.nested.property('right.left.right.type', 'exponent');
+            expect(results).to.have.nested.property('right.left.right.left.type', 'number');
+            expect(results).to.have.nested.property('right.left.right.left.value', 7);
+            expect(results).to.have.nested.property('right.left.right.right.type', 'number');
+            expect(results).to.have.nested.property('right.left.right.right.value', 9);
+            expect(results).to.have.nested.property('right.right.type', 'parentheses');
+            expect(results).to.have.nested.property('right.right.content.type', 'add');
+            expect(results).to.have.nested.property('right.right.content.left.type', 'number');
+            expect(results).to.have.nested.property('right.right.content.left.value', 1);
+            expect(results).to.have.nested.property('right.right.content.right.type', 'number');
+            expect(results).to.have.nested.property('right.right.content.right.value', 2);
+
+            results = parser.parse('(2 + 1) * 9 ^ 7 % 6 / 4 * 5 - 2 + 3');
+            expect(results).to.have.property('type', 'add');
+            expect(results).to.have.nested.property('left.type', 'subtract');
+            expect(results).to.have.nested.property('left.left.type', 'multiply');
+            expect(results).to.have.nested.property('left.left.left.type', 'divide');
+            expect(results).to.have.nested.property('left.left.left.left.type', 'modulo');
+            expect(results).to.have.nested.property('left.left.left.left.left.type', 'multiply');
+            expect(results).to.have.nested.property('left.left.left.left.left.left.type', 'parentheses');
+            expect(results).to.have.nested.property('left.left.left.left.left.left.content.type', 'add');
+            expect(results).to.have.nested.property('left.left.left.left.left.left.content.left.type', 'number');
+            expect(results).to.have.nested.property('left.left.left.left.left.left.content.left.value', 2);
+            expect(results).to.have.nested.property('left.left.left.left.left.left.content.right.type', 'number');
+            expect(results).to.have.nested.property('left.left.left.left.left.left.content.right.value', 1);
+            expect(results).to.have.nested.property('left.left.left.left.left.right.type', 'exponent');
+            expect(results).to.have.nested.property('left.left.left.left.left.right.left.type', 'number');
+            expect(results).to.have.nested.property('left.left.left.left.left.right.left.value', 9);
+            expect(results).to.have.nested.property('left.left.left.left.left.right.right.type', 'number');
+            expect(results).to.have.nested.property('left.left.left.left.left.right.right.value', 7);
+            expect(results).to.have.nested.property('left.left.left.left.right.type', 'number');
+            expect(results).to.have.nested.property('left.left.left.left.right.value', 6);
+            expect(results).to.have.nested.property('left.left.left.right.type', 'number');
+            expect(results).to.have.nested.property('left.left.left.right.value', 4);
+            expect(results).to.have.nested.property('left.left.right.type', 'number');
+            expect(results).to.have.nested.property('left.left.right.value', 5);
+            expect(results).to.have.nested.property('left.right.type', 'number');
+            expect(results).to.have.nested.property('left.right.value', 2);
+            expect(results).to.have.nested.property('right.type', 'number');
+            expect(results).to.have.nested.property('right.value', 3);
         });
     });
 
-    describe('Grouping', () =>
+    describe('Repeats', () =>
     {
-        it('grouping overrides order of operations', () =>
-        {
-            const results = parser.parse('(3 + 2) * 4');
-            expect(results).to.have.property('type', 'multiply');
-            expect(results).to.have.nested.property('left.type', 'add');
-            expect(results).to.have.nested.property('left.left.value', 3);
-            expect(results).to.have.nested.property('left.right.value', 2);
-            expect(results).to.have.nested.property('right.value', 4);
-        });
-
         it('supports implicit repeats with `X(...)`', () =>
         {
             const results = parser.parse('3(2d6 + 4)');
             expect(results.type).to.equal('repeat');
-            expect(results.count).to.equal(3);
+            expect(results).to.have.nested.property('count.type', 'number');
+            expect(results).to.have.nested.property('count.value', 3);
+            expect(results.content).to.exist;
         });
     });
 
@@ -160,8 +224,10 @@ describe('Dice Syntax Parser', () =>
             expect(results.type).to.equal('function');
             expect(results.name).to.equal('foobar');
             expect(results).to.have.nested.property('args.length', 1);
-            expect(results).to.have.nested.property('args[0].count', 2);
-            expect(results).to.have.nested.property('args[0].sides', 6);
+            expect(results).to.have.nested.property('args[0].count.type', 'number');
+            expect(results).to.have.nested.property('args[0].count.value', 2);
+            expect(results).to.have.nested.property('args[0].sides.type', 'number');
+            expect(results).to.have.nested.property('args[0].sides.value', 6);
         });
 
         it('supports functions with no arguments', () =>
@@ -169,6 +235,8 @@ describe('Dice Syntax Parser', () =>
             const results = parser.parse('foobar()');
             expect(results.type).to.equal('function');
             expect(results.name).to.equal('foobar');
+            expect(results.args).to.exist;
+            expect(results.args.length).to.equal(0);
         });
 
         it('supports functions with multiple arguments', () =>
@@ -177,8 +245,10 @@ describe('Dice Syntax Parser', () =>
             expect(results.type).to.equal('function');
             expect(results.name).to.equal('foobar');
             expect(results).to.have.nested.property('args.length', 2);
-            expect(results).to.have.nested.property('args[0].count', 2);
-            expect(results).to.have.nested.property('args[0].sides', 6);
+            expect(results).to.have.nested.property('args[0].count.type', 'number');
+            expect(results).to.have.nested.property('args[0].count.value', 2);
+            expect(results).to.have.nested.property('args[0].sides.type', 'number');
+            expect(results).to.have.nested.property('args[0].sides.value', 6);
             expect(results).to.have.nested.property('args[1].type', 'number');
             expect(results).to.have.nested.property('args[1].value', 3);
         });
