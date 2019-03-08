@@ -16,12 +16,12 @@ describe('Repeat Class', () =>
     let repeat;
     beforeEach(() =>
     {
-        repeat = new Repeat(3, new Roll(3, 6));
+        repeat = new Repeat(new Num(3), new Roll(new Num(3), new Num(6)));
     });
 
     it('can be converted to json', () =>
     {
-        expect(JSON.stringify(repeat)).to.equal('{"type":"repeat","count":3,"right":{"type":"roll","count":3,"sides":6,"results":[]}}');
+        expect(JSON.stringify(repeat)).to.equal('{"type":"repeat","count":{"type":"number","value":3},"content":{"type":"roll","count":{"type":"number","value":3},"sides":{"type":"number","value":6},"results":[]}}');
     });
 
     it('can be converted to a parsable string', () =>
@@ -34,7 +34,7 @@ describe('Repeat Class', () =>
     {
         it('returns itself with the value populated', () =>
         {
-            repeat = new Repeat(3, new Num(5));
+            repeat = new Repeat(new Num(3), new Num(5));
             const results = repeat.eval();
 
             expect(results.value).to.exist;
@@ -43,7 +43,7 @@ describe('Repeat Class', () =>
 
         it('stores the results of each iteration in the `results` property', () =>
         {
-            repeat = new Repeat(3, new Num(5));
+            repeat = new Repeat(new Num(3), new Num(5));
             const results = repeat.eval();
 
             expect(results.value).to.exist;
