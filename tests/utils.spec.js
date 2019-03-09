@@ -12,14 +12,15 @@ describe('Utils', () =>
 {
     describe('#get()', () =>
     {
-        const object = { 'a': [{ 'b': { 'c': 3 } }] };
+        /* eslint-disable id-length */
+        const object = { a: [ { b: { c: 3 } } ] };
 
         it('gets the value at `path` of `object`', () =>
         {
             const results = utils.get(object, 'a[0].b.c');
             expect(results).to.equal(3);
 
-            const results2 = utils.get(object, ['a', '0', 'b', 'c']);
+            const results2 = utils.get(object, [ 'a', '0', 'b', 'c' ]);
             expect(results2).to.equal(3);
         });
 
@@ -28,7 +29,7 @@ describe('Utils', () =>
             const results = utils.get(object, 'a.b.c', 'default');
             expect(results).to.equal('default');
 
-            const results2 = utils.get(object, ['a', 'b', 'c'], 'default');
+            const results2 = utils.get(object, [ 'a', 'b', 'c' ], 'default');
             expect(results2).to.equal('default');
         });
     });

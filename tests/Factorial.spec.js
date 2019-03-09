@@ -33,7 +33,7 @@ describe('Factorial Class', () =>
     {
         it('returns itself with the value populated', () =>
         {
-            repeat = new Factorial(new Num(3));
+            const repeat = new Factorial(new Num(3));
             const results = repeat.eval();
 
             expect(results.value).to.exist;

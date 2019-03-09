@@ -17,7 +17,7 @@ const parser = require('../lib/parser');
 
 describe('Default Scope', () =>
 {
-    let rollDieMock, defaultScope;
+    let rollDieMock; let defaultScope;
     beforeEach(() =>
     {
         rollDieMock = {
@@ -136,7 +136,7 @@ describe('Default Scope', () =>
                 // Replace the eval function on the Roll instance.
                 expr.args[0].eval = () =>
                 {
-                    if(rolls < 3) { rolls++; return { sides: 6, value: 6 } }
+                    if(rolls < 3) { rolls++; return { sides: 6, value: 6 }; }
                     else { return { sides: 6, value: 5 }; }
                 };
 
@@ -160,7 +160,7 @@ describe('Default Scope', () =>
                 const expr = parser.parse('dropLowest(3d6)');
                 expr.args[0].eval = () =>
                 {
-                    return { results: [1, 1, 3, 4, 5] }
+                    return { results: [ 1, 1, 3, 4, 5 ] };
                 };
 
                 const results = expr.eval();
@@ -183,7 +183,7 @@ describe('Default Scope', () =>
                 const expr = parser.parse('dropHighest(3d6)');
                 expr.args[0].eval = () =>
                 {
-                    return { results: [1, 1, 3, 4, 5] }
+                    return { results: [ 1, 1, 3, 4, 5 ] };
                 };
 
                 const results = expr.eval();
@@ -206,7 +206,7 @@ describe('Default Scope', () =>
                 const expr = parser.parse('rerollAbove(4, 5d6)');
                 expr.args[1].eval = () =>
                 {
-                    return { results: [1, 1, 3, 4, 5], sides: 6, count: 5 }
+                    return { results: [ 1, 1, 3, 4, 5 ], sides: 6, count: 5 };
                 };
 
                 const results = expr.eval(defaultScope.defaultScope);
@@ -226,7 +226,7 @@ describe('Default Scope', () =>
             it('throws an error if the maximum value is not a number', () =>
             {
                 const expr = parser.parse('rerollAbove(foo, 5d6)');
-                expect(() =>{ expr.eval({ foo: 'bleh' }); }).to.throw("Non-finite number passed to 'rerollAbove()': bleh");
+                expect(() => { expr.eval({ foo: 'bleh' }); }).to.throw("Non-finite number passed to 'rerollAbove()': bleh");
             });
         });
 
@@ -237,7 +237,7 @@ describe('Default Scope', () =>
                 const expr = parser.parse('rerollBelow(1, 5d6)');
                 expr.args[1].eval = () =>
                 {
-                    return { results: [1, 1, 3, 4, 5], sides: 6, count: 5 }
+                    return { results: [ 1, 1, 3, 4, 5 ], sides: 6, count: 5 };
                 };
 
                 const results = expr.eval(defaultScope.defaultScope);
@@ -257,7 +257,7 @@ describe('Default Scope', () =>
             it('throws an error if the minimum value is not a number', () =>
             {
                 const expr = parser.parse('rerollBelow(foo, 5d6)');
-                expect(() =>{ expr.eval({ foo: 'bleh' }); }).to.throw("Non-finite number passed to 'rerollBelow()': bleh");
+                expect(() => { expr.eval({ foo: 'bleh' }); }).to.throw("Non-finite number passed to 'rerollBelow()': bleh");
             });
         });
     });

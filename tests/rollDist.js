@@ -2,6 +2,8 @@
 // A simple test for uniform distributions.
 //----------------------------------------------------------------------------------------------------------------------
 
+/* eslint-disable no-console */
+
 const dice = require('../lib/rolldie');
 const { range } = require('../lib/utils');
 

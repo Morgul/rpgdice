@@ -13,16 +13,17 @@ const Num = require('../lib/Number');
 
 describe('Function Class', () =>
 {
-    let func, escapedFunc;
+    let func; let escapedFunc;
     beforeEach(() => 
     {
-        func = new Func('foo', [new Roll(new Num(3), new Num(6))]);
-        escapedFunc = new Func('Some Function', [new Roll(new Num(3), new Num(6))]);
+        func = new Func('foo', [ new Roll(new Num(3), new Num(6)) ]);
+        escapedFunc = new Func('Some Function', [ new Roll(new Num(3), new Num(6)) ]);
     });
 
-    it('can be converted to json', () => {
-        expect(JSON.stringify(func)).to.equal('{"type":"function","name":"foo","args":[{"type":"roll","count":{"type":"number","value":3},"sides":{"type":"number","value":6},"results":[]}],"results":[]}')
-    })
+    it('can be converted to json', () => 
+    {
+        expect(JSON.stringify(func)).to.equal('{"type":"function","name":"foo","args":[{"type":"roll","count":{"type":"number","value":3},"sides":{"type":"number","value":6},"results":[]}],"results":[]}');
+    });
 
     it('can be converted to a parsable string', () => 
     {
@@ -38,9 +39,10 @@ describe('Function Class', () =>
         it('returns itself with the value populated', () =>
         {
             const results = func.eval({
-                foo: function (expr, scope) {
-                    this.expr = expr.eval(scope)
-                    return this.expr.value + 1
+                foo(expr, scope) 
+                {
+                    this.expr = expr.eval(scope);
+                    return this.expr.value + 1;
                 }
             });
 
@@ -51,7 +53,7 @@ describe('Function Class', () =>
         it('throws an error if the function is not found on the scope, or is not a function', () =>
         {
             expect(func.eval.bind(func)).to.throw("'foo' is not a function on the provided scope.");
-            expect(() => { func.eval({ foo: 'bleh' }) }).to.throw("'foo' is not a function on the provided scope.");
+            expect(() => { func.eval({ foo: 'bleh' }); }).to.throw("'foo' is not a function on the provided scope.");
         });
     });
 });

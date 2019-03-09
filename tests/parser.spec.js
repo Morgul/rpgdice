@@ -10,7 +10,6 @@ const parser = require('../lib/parser');
 
 describe('Dice Syntax Parser', () =>
 {
-
     describe('Dice Syntax', () =>
     {
         it('supports `XdY` dice format', () =>
@@ -46,7 +45,6 @@ describe('Dice Syntax Parser', () =>
             expect(results).to.have.nested.property('sides.count.value', 1);
             expect(results).to.have.nested.property('sides.sides.type', 'number');
             expect(results).to.have.nested.property('sides.sides.value', 6);
-            
         });
     });
 

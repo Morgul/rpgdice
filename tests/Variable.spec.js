@@ -13,11 +13,11 @@ const Operation = require('../lib/Operation');
 
 describe('Variable Class', () =>
 {
-    let variable, nestedVar, escapedVar;
-    beforeEach(function()
+    let variable; let nestedVar; let escapedVar;
+    beforeEach(() => 
     {
         variable = new Variable('foo');
-        nestedVar = new Variable("foo.bar.0.baz");
+        nestedVar = new Variable('foo.bar.0.baz');
         escapedVar = new Variable('This is a var!');
     });
 
@@ -35,7 +35,7 @@ describe('Variable Class', () =>
         expect(parser.parse(escapedVar.toString())).to.deep.equal(escapedVar);
     });
 
-    describe('#eval()', function()
+    describe('#eval()', () => 
     {
         it('returns itself with the value populated', () =>
         {
@@ -45,7 +45,7 @@ describe('Variable Class', () =>
             expect(results.value).to.equal('bar');
         });
 
-        it('supports nested variables', function()
+        it('supports nested variables', () => 
         {
             const results = nestedVar.eval({ foo: { bar: [ { baz: 23 } ] } });
             expect(results.value).to.equal(23);
@@ -53,7 +53,7 @@ describe('Variable Class', () =>
 
         it('throws an error if the variable is not found in the scope', () =>
         {
-            expect(variable.eval.bind(variable)).to.throw("Variable '" + variable.name + "' not found in scope.");
+            expect(variable.eval.bind(variable)).to.throw(`Variable '${ variable.name }' not found in scope.`);
         });
 
         it('expands parsable expressions', () =>
