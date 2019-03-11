@@ -79,7 +79,7 @@ roll "die roll"
 
 /* Strait forward factorial */
 factorial "factorial"
-  = content:posintnum OWS '!'
+  = content:intnum OWS '!'
     { return new Factorial(content); }
 
 /* Strait forward variable */
