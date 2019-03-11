@@ -58,6 +58,19 @@ describe('Roll Class', () =>
             expect(results.value).to.be.at.most(6);
         });
 
+        it('allows a negative count', () =>
+        {
+            roll = new Roll(new Num(-1), new Num(6));
+
+            const results = roll.eval();
+
+            expect(results.results).to.exist;
+            expect(results.results.length).to.equal(1);
+            expect(results.value).to.exist;
+            expect(results.value).to.be.at.most(-1);
+            expect(results.value).to.be.at.least(-6);
+        });
+
         it('offsets rolls by -1 when sides <= 0', () =>
         {
             roll = new Roll(new Num(1), new Num(-3));
