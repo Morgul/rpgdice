@@ -29,7 +29,12 @@
 
 /* Trim leading & trailing whitespace */
 start "start"
-  = OWS additive:additive OWS
+  = OWS primary:primary OWS
+    { return primary; }
+
+/* The restart point for later rules, purely organizational */
+primary "primary"
+  = additive:additive
     { return additive; }
 
 /* Parse additives to be left-associative */
@@ -59,18 +64,18 @@ value "value"
 
 /* Repeat should only allow a positive count, we can't do something negative times now can we? (Although I think 0 still "works", interestingly) */
 repeat "repeat"
-  = count:posintnum OWS '(' OWS content:additive OWS ')'
+  = count:posintnum OWS '(' OWS content:primary OWS ')'
     { return new Repeat(count, content); }
 
 /* Function allows an array of arguments, if no arguments found return empty array */
 func "function"
-  = name:identifier OWS '(' args:(OWS first:additive? rest:(OWS ',' OWS arg:additive { return arg; })* { return (first ? [first] : []).concat(rest); }) OWS ')'
+  = name:identifier OWS '(' args:(OWS first:primary? rest:(OWS ',' OWS arg:primary { return arg; })* { return (first ? [first] : []).concat(rest); }) OWS ')'
     { return new Func(name, args); }
 
 /* Roll uses simplified right-associativity, a positive count (including 0), and an integer number of sides */
 roll "die roll"
-  = count:(count:(factorial / posintnum) OWS { return count; })? 'd' OWS sides:(roll / factorial / intnum)
-    { return new Roll(count || undefined, sides); }
+  = count:(count:(factorial / posintnum)? { return count || undefined; }) OWS 'd' OWS sides:(roll / factorial / intnum)
+    { return new Roll(count, sides); }
 
 /* Strait forward factorial */
 factorial "factorial"
@@ -99,7 +104,7 @@ posintnum "positive integer number"
 
 /* Strait forward parentheses */
 parentheses "parentheses"
-  = '(' OWS content:additive OWS ')'
+  = '(' OWS content:primary OWS ')'
     { return new Parentheses(content); }
 
 
@@ -125,6 +130,10 @@ identifier "identifier"
   / '[' name:$([^[\]]* ('\\]' [^[\]]+)*) ']'
     { return name; }
 
-/* White space */
+/* Omit white space and comments */
 OWS "omit white space"
-  = [ \t\r\n]*
+  = ([ \t\r\n] / comment)*
+
+/* Comment */
+comment "comment"
+  = '/*' (!'*/' .)* '*/'

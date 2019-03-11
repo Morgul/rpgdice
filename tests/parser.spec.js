@@ -10,6 +10,31 @@ const parser = require('../lib/parser');
 
 describe('Dice Syntax Parser', () =>
 {
+    describe('White Space', () =>
+    {
+        it('supports omitting whitespace', () =>
+        {
+            const results = parser.parse('  3 \r\n d\t  6');
+
+            expect(results.type).to.equal('roll');
+            expect(results).to.have.nested.property('count.type', 'number');
+            expect(results).to.have.nested.property('count.value', 3);
+            expect(results).to.have.nested.property('sides.type', 'number');
+            expect(results).to.have.nested.property('sides.value', 6);
+        });
+
+        it('supports omitting comments', () =>
+        {
+            const results = parser.parse('/* comment */3d/* comment 3d6 */6');
+
+            expect(results.type).to.equal('roll');
+            expect(results).to.have.nested.property('count.type', 'number');
+            expect(results).to.have.nested.property('count.value', 3);
+            expect(results).to.have.nested.property('sides.type', 'number');
+            expect(results).to.have.nested.property('sides.value', 6);
+        });
+    });
+
     describe('Dice Syntax', () =>
     {
         it('supports `XdY` dice format', () =>
