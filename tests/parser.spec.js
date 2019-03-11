@@ -48,6 +48,17 @@ describe('Dice Syntax Parser', () =>
             expect(results).to.have.nested.property('sides.value', 6);
         });
 
+        it('supports `-XdY` dice format', () =>
+        {
+            const results = parser.parse('-3d6');
+
+            expect(results.type).to.equal('roll');
+            expect(results).to.have.nested.property('count.type', 'number');
+            expect(results).to.have.nested.property('count.value', -3);
+            expect(results).to.have.nested.property('sides.type', 'number');
+            expect(results).to.have.nested.property('sides.value', 6);
+        });
+
         it('leaves count undefined if you only specify `dY`', () =>
         {
             const results = parser.parse('d6');
@@ -199,6 +210,15 @@ describe('Dice Syntax Parser', () =>
             expect(results.type).to.equal('repeat');
             expect(results).to.have.nested.property('count.type', 'number');
             expect(results).to.have.nested.property('count.value', 3);
+            expect(results.content).to.exist;
+        });
+
+        it('supports implicit repeats with `-X(...)`', () =>
+        {
+            const results = parser.parse('-3(2d6 + 4)');
+            expect(results.type).to.equal('repeat');
+            expect(results).to.have.nested.property('count.type', 'number');
+            expect(results).to.have.nested.property('count.value', -3);
             expect(results.content).to.exist;
         });
     });
