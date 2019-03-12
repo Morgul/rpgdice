@@ -79,7 +79,7 @@ roll "die roll"
 
 /* Strait forward factorial */
 factorial "factorial"
-  = content:intnum OWS '!'
+  = content:posintnum OWS '!'
     { return new Factorial(content); }
 
 /* Strait forward variable */
@@ -95,6 +95,11 @@ num "number"
 /* Positive or negative integer */
 intnum "integer number"
   = value:(sign:'-'? value:integer { return parseInt((sign||'')+value); })
+    { return new Num(value); }
+
+/* Positive integer */
+posintnum "positive integer number"
+  = value:integer
     { return new Num(value); }
 
 /* Strait forward parentheses */
