@@ -50,6 +50,15 @@ describe('Repeat Class', () =>
             expect(results.value).to.equal(-15);
         });
 
+        it('allows a float count, floored', () =>
+        {
+            repeat = new Repeat(new Num(3.75), new Num(5));
+            const results = repeat.eval();
+
+            expect(results.value).to.exist;
+            expect(results.value).to.equal(15);
+        });
+
         it('stores the results of each iteration in the `results` property', () =>
         {
             repeat = new Repeat(new Num(3), new Num(5));

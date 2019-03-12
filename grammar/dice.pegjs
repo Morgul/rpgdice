@@ -62,9 +62,9 @@ value "value"
   / num
   / parentheses
 
-/* Repeat should only allow a positive count, we can't do something negative times now can we? (Although I think 0 still "works", interestingly) */
+/* Repeat with as many count options as possible */
 repeat "repeat"
-  = count:intnum OWS '(' OWS content:primary OWS ')'
+  = count:(parentheses / factorial / num) OWS '(' OWS content:primary OWS ')'
     { return new Repeat(count, content); }
 
 /* Function allows an array of arguments, if no arguments found return empty array */
@@ -72,9 +72,9 @@ func "function"
   = name:identifier OWS '(' args:(OWS first:primary? rest:(OWS ',' OWS arg:primary { return arg; })* { return (first ? [first] : []).concat(rest); }) OWS ')'
     { return new Func(name, args); }
 
-/* Roll uses simplified right-associativity, a positive count (including 0), and an integer number of sides */
+/* Roll uses simplified right-associativity */
 roll "die roll"
-  = count:(count:(factorial / intnum)? { return count || undefined; }) OWS 'd' OWS sides:(roll / factorial / intnum)
+  = count:(count:(parentheses / factorial / num)? { return count || undefined; }) OWS 'd' OWS sides:(parentheses / roll / factorial / num)
     { return new Roll(count, sides); }
 
 /* Strait forward factorial */
@@ -90,11 +90,6 @@ variable "variable"
 /* Positive or negative float */
 num "number"
   = value:(sign:'-'? value:float { return parseFloat((sign||'')+value); })
-    { return new Num(value); }
-
-/* Positive or negative integer */
-intnum "integer number"
-  = value:(sign:'-'? value:integer { return parseInt((sign||'')+value); })
     { return new Num(value); }
 
 /* Positive integer */

@@ -48,17 +48,6 @@ describe('Dice Syntax Parser', () =>
             expect(results).to.have.nested.property('sides.value', 6);
         });
 
-        it('supports `-XdY` dice format', () =>
-        {
-            const results = parser.parse('-3d6');
-
-            expect(results.type).to.equal('roll');
-            expect(results).to.have.nested.property('count.type', 'number');
-            expect(results).to.have.nested.property('count.value', -3);
-            expect(results).to.have.nested.property('sides.type', 'number');
-            expect(results).to.have.nested.property('sides.value', 6);
-        });
-
         it('leaves count undefined if you only specify `dY`', () =>
         {
             const results = parser.parse('d6');
@@ -69,7 +58,87 @@ describe('Dice Syntax Parser', () =>
             expect(results).to.have.nested.property('sides.value', 6);
         });
 
-        it('supports `XdYdZ dice format as Xd(YdZ)', () =>
+        it('supports a negative count', () =>
+        {
+            const results = parser.parse('-3d6');
+
+            expect(results.type).to.equal('roll');
+            expect(results).to.have.nested.property('count.type', 'number');
+            expect(results).to.have.nested.property('count.value', -3);
+            expect(results).to.have.nested.property('sides.type', 'number');
+            expect(results).to.have.nested.property('sides.value', 6);
+        });
+
+        it('supports a float count', () =>
+        {
+            const results = parser.parse('3.75d6');
+
+            expect(results.type).to.equal('roll');
+            expect(results).to.have.nested.property('count.type', 'number');
+            expect(results).to.have.nested.property('count.value', 3.75);
+            expect(results).to.have.nested.property('sides.type', 'number');
+            expect(results).to.have.nested.property('sides.value', 6);
+        });
+
+        it('supports a factorial count', () =>
+        {
+            const results = parser.parse('3!d6');
+
+            expect(results.type).to.equal('roll');
+            expect(results).to.have.nested.property('count.type', 'factorial');
+            expect(results).to.have.nested.property('count.content.type', 'number');
+            expect(results).to.have.nested.property('count.content.value', 3);
+            expect(results).to.have.nested.property('sides.type', 'number');
+            expect(results).to.have.nested.property('sides.value', 6);
+        });
+
+        it('supports a parentheses count', () =>
+        {
+            const results = parser.parse('(3)d6');
+
+            expect(results.type).to.equal('roll');
+            expect(results).to.have.nested.property('count.type', 'parentheses');
+            expect(results).to.have.nested.property('count.content.type', 'number');
+            expect(results).to.have.nested.property('count.content.value', 3);
+            expect(results).to.have.nested.property('sides.type', 'number');
+            expect(results).to.have.nested.property('sides.value', 6);
+        });
+
+        it('supports a negative number of sides', () =>
+        {
+            const results = parser.parse('3d-6');
+
+            expect(results.type).to.equal('roll');
+            expect(results).to.have.nested.property('count.type', 'number');
+            expect(results).to.have.nested.property('count.value', 3);
+            expect(results).to.have.nested.property('sides.type', 'number');
+            expect(results).to.have.nested.property('sides.value', -6);
+        });
+
+        it('supports a float number of sides', () =>
+        {
+            const results = parser.parse('3d6.75');
+
+            expect(results.type).to.equal('roll');
+            expect(results).to.have.nested.property('count.type', 'number');
+            expect(results).to.have.nested.property('count.value', 3);
+            expect(results).to.have.nested.property('sides.type', 'number');
+            expect(results).to.have.nested.property('sides.value', 6.75);
+        });
+
+        it('supports a factorial number of sides', () =>
+        {
+            const results = parser.parse('3d6!');
+
+            expect(results.type).to.equal('roll');
+            expect(results).to.have.nested.property('count.type', 'number');
+            expect(results).to.have.nested.property('count.value', 3);
+            expect(results).to.have.nested.property('sides.type', 'factorial');
+            expect(results).to.have.nested.property('sides.content.type', 'number');
+            expect(results).to.have.nested.property('sides.content.value', 6);
+        });
+
+        it('supports a dice roll number of sides', () =>
         {
             const results = parser.parse('3d1d6');
 
@@ -81,6 +150,18 @@ describe('Dice Syntax Parser', () =>
             expect(results).to.have.nested.property('sides.count.value', 1);
             expect(results).to.have.nested.property('sides.sides.type', 'number');
             expect(results).to.have.nested.property('sides.sides.value', 6);
+        });
+
+        it('supports a parentheses number of sides', () =>
+        {
+            const results = parser.parse('3d(6)');
+
+            expect(results.type).to.equal('roll');
+            expect(results).to.have.nested.property('count.type', 'number');
+            expect(results).to.have.nested.property('count.value', 3);
+            expect(results).to.have.nested.property('sides.type', 'parentheses');
+            expect(results).to.have.nested.property('sides.content.type', 'number');
+            expect(results).to.have.nested.property('sides.content.value', 6);
         });
     });
 
@@ -213,12 +294,41 @@ describe('Dice Syntax Parser', () =>
             expect(results.content).to.exist;
         });
 
-        it('supports implicit repeats with `-X(...)`', () =>
+        it('supports a negative count', () =>
         {
             const results = parser.parse('-3(2d6 + 4)');
             expect(results.type).to.equal('repeat');
             expect(results).to.have.nested.property('count.type', 'number');
             expect(results).to.have.nested.property('count.value', -3);
+            expect(results.content).to.exist;
+        });
+
+        it('supports a float count', () =>
+        {
+            const results = parser.parse('3.75(2d6 + 4)');
+            expect(results.type).to.equal('repeat');
+            expect(results).to.have.nested.property('count.type', 'number');
+            expect(results).to.have.nested.property('count.value', 3.75);
+            expect(results.content).to.exist;
+        });
+
+        it('supports a factorial count', () =>
+        {
+            const results = parser.parse('3!(2d6 + 4)');
+            expect(results.type).to.equal('repeat');
+            expect(results).to.have.nested.property('count.type', 'factorial');
+            expect(results).to.have.nested.property('count.content.type', 'number');
+            expect(results).to.have.nested.property('count.content.value', 3);
+            expect(results.content).to.exist;
+        });
+
+        it('supports a parentheses count', () =>
+        {
+            const results = parser.parse('(3)(2d6 + 4)');
+            expect(results.type).to.equal('repeat');
+            expect(results).to.have.nested.property('count.type', 'parentheses');
+            expect(results).to.have.nested.property('count.content.type', 'number');
+            expect(results).to.have.nested.property('count.content.value', 3);
             expect(results.content).to.exist;
         });
     });

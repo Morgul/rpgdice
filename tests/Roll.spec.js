@@ -71,7 +71,20 @@ describe('Roll Class', () =>
             expect(results.value).to.be.at.least(-6);
         });
 
-        it('offsets rolls by -1 when sides <= 0', () =>
+        it('allows a float count, floored', () =>
+        {
+            roll = new Roll(new Num(1.75), new Num(6));
+
+            const results = roll.eval();
+
+            expect(results.results).to.exist;
+            expect(results.results.length).to.equal(1);
+            expect(results.value).to.exist;
+            expect(results.value).to.be.at.least(1);
+            expect(results.value).to.be.at.most(6);
+        });
+
+        it('allows a negative number of sides', () =>
         {
             roll = new Roll(new Num(1), new Num(-3));
 
@@ -81,6 +94,19 @@ describe('Roll Class', () =>
             expect(results.value).to.exist;
             expect(results.value).to.be.at.least(-3);
             expect(results.value).to.be.at.most(-1);
+        });
+
+        it('allows a float number of sides, floored', () =>
+        {
+            roll = new Roll(new Num(1), new Num(6.75));
+
+            const results = roll.eval();
+
+            expect(results.results).to.exist;
+            expect(results.results.length).to.equal(1);
+            expect(results.value).to.exist;
+            expect(results.value).to.be.at.least(1);
+            expect(results.value).to.be.at.most(6);
         });
     });
 });

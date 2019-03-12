@@ -11,9 +11,9 @@
             Just enter a roll syntax below, and we'll roll it, and spit out the results.
         </p>
 
-        <form onsubmit="rollDice(event)">
+        <form onsubmit="return rollDice(event);">
             <input id="diceInput" placeholder="1d6 + 1">
-            <button id="rollBtn" onclick="" type="submit">Roll!</button>
+            <button id="rollBtn" type="submit">Roll!</button>
         </form>
 
         <h4>Output</h4>
@@ -22,7 +22,10 @@
         <script>
             window.rollDice = function(event)
             {
-                event.preventDefault();
+                if(event)
+                {
+                    event.preventDefault();
+                }
 
                 const rollText = document.getElementById('diceInput').value;
                 const rollHistElem = document.getElementById('rollHist');
@@ -45,3 +48,4 @@
         </script>
     </body>
 </html>
+
