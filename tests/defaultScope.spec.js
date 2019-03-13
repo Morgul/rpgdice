@@ -13,6 +13,8 @@ const proxyquire = require('proxyquire');
 const rollDie = require('../lib/rolldie');
 const parser = require('../lib/parser');
 
+const Num = require('../lib/Number');
+
 // ---------------------------------------------------------------------------------------------------------------------
 
 describe('Default Scope', () =>
@@ -136,8 +138,8 @@ describe('Default Scope', () =>
                 // Replace the eval function on the Roll instance.
                 expr.args[0].eval = () =>
                 {
-                    if(rolls < 3) { rolls++; return { sides: 6, value: 6 }; }
-                    else { return { sides: 6, value: 5 }; }
+                    if(rolls < 3) { rolls++; return { sides: new Num(6), value: 6 }; }
+                    else { return { sides: new Num(6), value: 5 }; }
                 };
 
                 const results = expr.eval();
