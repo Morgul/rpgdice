@@ -413,6 +413,33 @@ describe('Dice Syntax Parser', () =>
             expect(results.name).to.equal('func with spaces');
         });
     });
+
+    describe('Speed', () =>
+    {
+        it('performs long parses quickly', () =>
+        {
+            const start = Date.now();
+            const results = parser.parse('5 + 5 + 5 + 5 + 5 + 5 + 5 + 5 + 5 + 5 + 5 + 5 + 5 + 5 + 5 + 5 + 5 + 5 + 5 + 5 + 5 + 5 + 5 + 5 + 5 + 5 + 5 + 5 + 5');
+            const end = Date.now();
+            expect(results.type).to.equal('add');
+            const time = (end - start);
+            if (time > 500) {
+                throw Error('Parse took ' + time + 'ms!');
+            }
+        });
+
+        it('performs deeply nested parses quickly', () =>
+        {
+            const start = Date.now();
+            const results = parser.parse('((((((((5))))))))');
+            const end = Date.now();
+            expect(results.type).to.equal('parentheses');
+            const time = (end - start);
+            if (time > 500) {
+                throw Error('Parse took ' + time + 'ms!');
+            }
+        });
+    });
 });
 
 // ---------------------------------------------------------------------------------------------------------------------

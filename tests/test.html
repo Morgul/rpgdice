@@ -29,13 +29,20 @@
 
                 const rollText = document.getElementById('diceInput').value;
                 const rollHistElem = document.getElementById('rollHist');
+
+                const evalStart = Date.now();
+
                 const results = rpgdice.eval(rollText);
+
+                const evalEnd = Date.now();
 
                 console.log(results);
 
                 rollHistElem.innerHTML = '';
                 rollHistElem.innerHTML += '<strong>input</strong>';
                 rollHistElem.innerHTML += `\n${ rollText }`;
+                rollHistElem.innerHTML += '\n\n<strong>parse time</strong>';
+                rollHistElem.innerHTML += `\n${ (evalEnd - evalStart) }ms`;
                 rollHistElem.innerHTML += '\n\n<strong>toString</strong>';
                 rollHistElem.innerHTML += `\n${ results.toString() }`;
                 rollHistElem.innerHTML += '\n\n<strong>render</strong>';

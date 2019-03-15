@@ -10,16 +10,15 @@
   const Parentheses = require('./Parentheses');
 
   /* Define side-associative operation helper functions */
-  function leftAssocOperation(rest, right) {
-    if (!rest.length) return right;
-    var current = rest.pop();
-    return new Operation(current.oper, leftAssocOperation(rest, current.left), right);
+  function leftAssocOperation(left, rest) {
+    return rest.reduce((left, current) => {
+      return new Operation(current.oper, left, current.right);
+    }, left);
   }
-
-  function rightAssocOperation(left, rest) {
-    if (!rest.length) return left;
-    var current = rest.shift();
-    return new Operation(current.oper, left, rightAssocOperation(current.right, rest));
+  function rightAssocOperation(rest, right) {
+    return rest.reduce((right, current) => {
+      return new Operation(current.oper, current.left, right);
+    }, right);
   }
 }
 
@@ -29,28 +28,27 @@
 
 /* Trim leading & trailing whitespace */
 start "start"
-  = OWS primary:primary OWS
-    { return primary; }
+  = OWS restart:restart OWS
+    { return restart; }
 
 /* The restart point for later rules, purely organizational */
-primary "primary"
-  = additive:additive
-    { return additive; }
+restart "restart"
+  = additive
 
 /* Parse additives to be left-associative */
 additive "additive"
-  = rest:(left:multiplicative OWS oper:[+-] OWS { return {left: left, oper: oper}; })* right:multiplicative
-    { return leftAssocOperation(rest, right); }
+  = left:multiplicative rest:(OWS oper:[+-] OWS right:multiplicative { return {oper: oper, right: right}; })*
+    { return leftAssocOperation(left, rest); }
 
 /* Parse multiplicatives to be left-associative */
 multiplicative "multiplicative"
-  = rest:(left:exponent OWS oper:[*/%] OWS { return {left: left, oper: oper}; })* right:exponent
-    { return leftAssocOperation(rest, right); }
+  = left:exponent rest:(OWS oper:[*/%] OWS right:exponent { return {oper: oper, right: right}; })*
+    { return leftAssocOperation(left, rest); }
 
 /* Parse exponents to be right-associative */
 exponent "exponent"
-  = left:value rest:(OWS oper:'^' OWS right:value { return {oper: oper, right: right}; })*
-    { return rightAssocOperation(left, rest); }
+  = rest:(left:value OWS oper:'^' OWS { return {left: left, oper: oper}; })* right:value
+    { return rightAssocOperation(rest, right); }
 
 /* For the rest of the parsing rules we can just use any order that avoids false positives */
 value "value"
@@ -64,12 +62,12 @@ value "value"
 
 /* Repeat with as many count options as possible */
 repeat "repeat"
-  = count:(parentheses / factorial / num) OWS '(' OWS content:primary OWS ')'
+  = count:(parentheses / factorial / num) OWS '(' OWS content:restart OWS ')'
     { return new Repeat(count, content); }
 
 /* Function allows an array of arguments, if no arguments found return empty array */
 func "function"
-  = name:identifier OWS '(' args:(OWS first:primary? rest:(OWS ',' OWS arg:primary { return arg; })* { return (first ? [first] : []).concat(rest); }) OWS ')'
+  = name:identifier OWS '(' args:(OWS first:restart? rest:(OWS ',' OWS arg:restart { return arg; })* { return (first ? [first] : []).concat(rest); }) OWS ')'
     { return new Func(name, args); }
 
 /* Roll uses simplified right-associativity */
@@ -99,7 +97,7 @@ posintnum "positive integer number"
 
 /* Strait forward parentheses */
 parentheses "parentheses"
-  = '(' OWS content:primary OWS ')'
+  = '(' OWS content:restart OWS ')'
     { return new Parentheses(content); }
 
 
