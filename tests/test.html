@@ -30,11 +30,15 @@
                 const rollText = document.getElementById('diceInput').value;
                 const rollHistElem = document.getElementById('rollHist');
 
-                const evalStart = Date.now();
+                const startTime = Date.now();
 
-                const results = rpgdice.eval(rollText);
+                const parsed = rpgdice.parse(rollText);
 
-                const evalEnd = Date.now();
+                const parseTime = Date.now();
+
+                const results = parsed.eval(rollText);
+
+                const evalTime = Date.now();
 
                 console.log(results);
 
@@ -42,7 +46,9 @@
                 rollHistElem.innerHTML += '<strong>input</strong>';
                 rollHistElem.innerHTML += `\n${ rollText }`;
                 rollHistElem.innerHTML += '\n\n<strong>parse time</strong>';
-                rollHistElem.innerHTML += `\n${ (evalEnd - evalStart) }ms`;
+                rollHistElem.innerHTML += `\n${ (parseTime - startTime) }ms`;
+                rollHistElem.innerHTML += '\n\n<strong>eval time</strong>';
+                rollHistElem.innerHTML += `\n${ (evalTime - parseTime) }ms`;
                 rollHistElem.innerHTML += '\n\n<strong>toString</strong>';
                 rollHistElem.innerHTML += `\n${ results.toString() }`;
                 rollHistElem.innerHTML += '\n\n<strong>render</strong>';
