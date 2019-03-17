@@ -1,6 +1,8 @@
 {
   /* Import expression types */
-  const Operation = require('./Operation')
+  const Conditional = require('./Conditional');
+  const Operation = require('./Operation');
+  const Not = require('./Not');
   const Repeat = require('./Repeat');
   const Func = require('./Function');
   const Roll = require('./Roll');
@@ -33,7 +35,33 @@ start "start"
 
 /* The restart point for later rules, purely organizational */
 restart "restart"
-  = additive
+  = conditional
+  / or
+
+/* Parse conditionals to be right-associative */
+conditional "conditional"
+  = condition:or OWS '?' OWS thenExpr:or OWS ':' OWS elseExpr:(conditional / or)
+    { return new Conditional(condition, thenExpr, elseExpr); }
+
+/* Parse ors to be left-associative */
+or "or"
+  = left:and rest:(OWS oper:'||' OWS right:and { return {oper: oper, right: right}; })*
+    { return leftAssocOperation(left, rest); }
+
+/* Parse ands to be left-associative */
+and "and"
+  = left:equality rest:(OWS oper:'&&' OWS right:equality { return {oper: oper, right: right}; })*
+    { return leftAssocOperation(left, rest); }
+
+/* Parse equalities to be left-associative */
+equality "equality"
+  = left:comparative rest:(OWS oper:('!=' / '==') OWS right:comparative { return {oper: oper, right: right}; })*
+    { return leftAssocOperation(left, rest); }
+
+/* Parse comparatives to be left-associative */
+comparative "comparative"
+  = left:additive rest:(OWS oper:('>=' / '<=' / '>' / '<') OWS right:additive { return {oper: oper, right: right}; })*
+    { return leftAssocOperation(left, rest); }
 
 /* Parse additives to be left-associative */
 additive "additive"
@@ -50,15 +78,21 @@ exponent "exponent"
   = rest:(left:value OWS oper:'^' OWS { return {left: left, oper: oper}; })* right:value
     { return rightAssocOperation(rest, right); }
 
-/* For the rest of the parsing rules we can just use any order that avoids false positives */
+/* For the rest of the parsing rules we can just use any order that avoids false positives, purely organizational */
 value "value"
-  = repeat
+  = not
+  / repeat
   / func
   / roll
   / factorial
   / variable
   / num
   / parentheses
+
+/* Strait forward not */
+not "not"
+  = '!' OWS content:restart
+    { return new Not(content); }
 
 /* Repeat with as many count options as possible */
 repeat "repeat"
@@ -75,9 +109,9 @@ roll "die roll"
   = count:(count:(parentheses / factorial / num)? { return count || undefined; }) OWS 'd' OWS sides:(parentheses / roll / factorial / num)
     { return new Roll(count, sides); }
 
-/* Strait forward factorial */
+/* Factorial with a fix to prevent '5 != 4' false positive */
 factorial "factorial"
-  = content:posintnum OWS '!'
+  = content:posintnum OWS '!' !('=' !'=')
     { return new Factorial(content); }
 
 /* Strait forward variable */

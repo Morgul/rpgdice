@@ -12,8 +12,15 @@
         </p>
 
         <form onsubmit="return rollDice(event);">
+            <label for="diceInput">Dice Syntax String:</label>
+            <br />
             <input id="diceInput" placeholder="1d6 + 1">
             <button id="rollBtn" type="submit">Roll!</button>
+            <br />
+            <br />
+            <label for="scope">Dice Eval Scope (JSON)</label>
+            <br />
+            <textarea id="scope" placeholder='{"variable":"value"}'></textarea>
         </form>
 
         <h4>Output</h4>
@@ -28,7 +35,17 @@
                 }
 
                 const rollText = document.getElementById('diceInput').value;
+                const rollScope = JSON.parse(document.getElementById('scope').value || '{}');
                 const rollHistElem = document.getElementById('rollHist');
+
+                rollHistElem.innerHTML = '';
+                rollHistElem.innerHTML += '<strong>input</strong>';
+                rollHistElem.innerHTML += `\n${ rollText || 'No input' }`;
+
+                if (!rollText.length)
+                {
+                    return;
+                }
 
                 const startTime = Date.now();
 
@@ -36,23 +53,38 @@
 
                 const parseTime = Date.now();
 
-                const results = parsed.eval(rollText);
+                rollHistElem.innerHTML += '\n\n<strong>parse time</strong>';
+                rollHistElem.innerHTML += `\n${ (parseTime - startTime) }ms`;
+                rollHistElem.innerHTML += '\n\n<strong>toString</strong>';
+                rollHistElem.innerHTML += `\n${ parsed.toString() }`;
+
+                let results;
+
+                try
+                {
+                    results = parsed.eval(rollScope);
+                }
+                catch (err)
+                {
+                    rollHistElem.innerHTML += '\n\n<strong>eval error</strong>';
+                    rollHistElem.innerHTML += `\n${ err }`;
+                }
 
                 const evalTime = Date.now();
 
-                console.log(results);
-
-                rollHistElem.innerHTML = '';
-                rollHistElem.innerHTML += '<strong>input</strong>';
-                rollHistElem.innerHTML += `\n${ rollText }`;
-                rollHistElem.innerHTML += '\n\n<strong>parse time</strong>';
-                rollHistElem.innerHTML += `\n${ (parseTime - startTime) }ms`;
                 rollHistElem.innerHTML += '\n\n<strong>eval time</strong>';
                 rollHistElem.innerHTML += `\n${ (evalTime - parseTime) }ms`;
-                rollHistElem.innerHTML += '\n\n<strong>toString</strong>';
-                rollHistElem.innerHTML += `\n${ results.toString() }`;
+
+                if (!results)
+                {
+                    return;
+                }
+
                 rollHistElem.innerHTML += '\n\n<strong>render</strong>';
                 rollHistElem.innerHTML += `\n${ results.render() } = <strong>${ results.value }</strong>`;
+
+                console.log(results);
+
                 rollHistElem.innerHTML += '\n\n<strong>JSON</strong>';
                 rollHistElem.innerHTML += `\n${ JSON.stringify(results, undefined, 2) }`;
 
