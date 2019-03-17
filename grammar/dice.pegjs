@@ -40,7 +40,7 @@ restart "restart"
 
 /* Parse conditionals to be right-associative */
 conditional "conditional"
-  = condition:or OWS '?' OWS thenExpr:or OWS ':' OWS elseExpr:(conditional / or)
+  = condition:or OWS '?' OWS thenExpr:restart OWS ':' OWS elseExpr:restart
     { return new Conditional(condition, thenExpr, elseExpr); }
 
 /* Parse ors to be left-associative */

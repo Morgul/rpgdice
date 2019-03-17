@@ -42,54 +42,66 @@
                 rollHistElem.innerHTML += '<strong>input</strong>';
                 rollHistElem.innerHTML += `\n${ rollText || 'No input' }`;
 
-                if (!rollText.length)
+                if(!rollText.length)
                 {
                     return;
                 }
 
-                const startTime = Date.now();
-
-                const parsed = rpgdice.parse(rollText);
-
-                const parseTime = Date.now();
-
-                rollHistElem.innerHTML += '\n\n<strong>parse time</strong>';
-                rollHistElem.innerHTML += `\n${ (parseTime - startTime) }ms`;
-                rollHistElem.innerHTML += '\n\n<strong>toString</strong>';
-                rollHistElem.innerHTML += `\n${ parsed.toString() }`;
-
-                let results;
+                let parsed;
+                let parsedTime;
 
                 try
                 {
-                    results = parsed.eval(rollScope);
+                    const parsedStart = Date.now();
+                    parsed = rpgdice.parse(rollText);
+                    const parsedEnd = Date.now();
+
+                    parsedTime = parsedEnd - parsedStart;
+                }
+                catch (err)
+                {
+                    rollHistElem.innerHTML += '\n\n<strong>parse error</strong>';
+                    rollHistElem.innerHTML += `\n${ err }`;
+
+                    return;
+                }
+
+                rollHistElem.innerHTML += '\n\n<strong>parse time</strong>';
+                rollHistElem.innerHTML += `\n${ parsedTime }ms`;
+                rollHistElem.innerHTML += '\n\n<strong>toString</strong>';
+                rollHistElem.innerHTML += `\n${ parsed.toString() }`;
+
+                let evaled;
+                let evaledTime;
+
+                try
+                {
+                    const evaledStart = Date.now();
+                    evaled = parsed.eval(rollScope);
+                    const evaledEnd = Date.now();
+
+                    evaledTime = evaledEnd - evaledStart;
                 }
                 catch (err)
                 {
                     rollHistElem.innerHTML += '\n\n<strong>eval error</strong>';
                     rollHistElem.innerHTML += `\n${ err }`;
-                }
 
-                const evalTime = Date.now();
-
-                rollHistElem.innerHTML += '\n\n<strong>eval time</strong>';
-                rollHistElem.innerHTML += `\n${ (evalTime - parseTime) }ms`;
-
-                if (!results)
-                {
                     return;
                 }
 
+                rollHistElem.innerHTML += '\n\n<strong>eval time</strong>';
+                rollHistElem.innerHTML += `\n${ evaledTime }ms`;
                 rollHistElem.innerHTML += '\n\n<strong>render</strong>';
-                rollHistElem.innerHTML += `\n${ results.render() } = <strong>${ results.value }</strong>`;
+                rollHistElem.innerHTML += `\n${ evaled.render() } = <strong>${ evaled.value }</strong>`;
 
-                console.log(results);
+                console.log(evaled);
 
                 rollHistElem.innerHTML += '\n\n<strong>JSON</strong>';
-                rollHistElem.innerHTML += `\n${ JSON.stringify(results, undefined, 2) }`;
+                rollHistElem.innerHTML += `\n${ JSON.stringify(evaled, undefined, 2) }`;
 
                 return false;
-            }
+            };
         </script>
     </body>
 </html>
