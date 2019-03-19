@@ -223,7 +223,7 @@ describe('Dice Syntax Parser', () =>
 
         it('supports order of operations', () =>
         {
-            let results = parser.parse('3 + 2 - 5 * 4 / 6 % 7 ^ 9 * (1 + 2)');
+            let results = parser.parse('3 + 2 - 5 * 4 / 6 % 7 ^ 9 ^ 2 * (1 + 2)');
             expect(results).to.have.property('type', 'subtract');
             expect(results).to.have.nested.property('left.type', 'add');
             expect(results).to.have.nested.property('left.left.type', 'number');
@@ -243,8 +243,11 @@ describe('Dice Syntax Parser', () =>
             expect(results).to.have.nested.property('right.left.right.type', 'exponent');
             expect(results).to.have.nested.property('right.left.right.left.type', 'number');
             expect(results).to.have.nested.property('right.left.right.left.value', 7);
-            expect(results).to.have.nested.property('right.left.right.right.type', 'number');
-            expect(results).to.have.nested.property('right.left.right.right.value', 9);
+            expect(results).to.have.nested.property('right.left.right.right.type', 'exponent');
+            expect(results).to.have.nested.property('right.left.right.right.left.type', 'number');
+            expect(results).to.have.nested.property('right.left.right.right.left.value', 9);
+            expect(results).to.have.nested.property('right.left.right.right.right.type', 'number');
+            expect(results).to.have.nested.property('right.left.right.right.right.value', 2);
             expect(results).to.have.nested.property('right.right.type', 'parentheses');
             expect(results).to.have.nested.property('right.right.content.type', 'add');
             expect(results).to.have.nested.property('right.right.content.left.type', 'number');
@@ -252,7 +255,7 @@ describe('Dice Syntax Parser', () =>
             expect(results).to.have.nested.property('right.right.content.right.type', 'number');
             expect(results).to.have.nested.property('right.right.content.right.value', 2);
 
-            results = parser.parse('(2 + 1) * 9 ^ 7 % 6 / 4 * 5 - 2 + 3');
+            results = parser.parse('(2 + 1) * 2 ^ 9 ^ 7 % 6 / 4 * 5 - 2 + 3');
             expect(results).to.have.property('type', 'add');
             expect(results).to.have.nested.property('left.type', 'subtract');
             expect(results).to.have.nested.property('left.left.type', 'multiply');
@@ -267,9 +270,12 @@ describe('Dice Syntax Parser', () =>
             expect(results).to.have.nested.property('left.left.left.left.left.left.content.right.value', 1);
             expect(results).to.have.nested.property('left.left.left.left.left.right.type', 'exponent');
             expect(results).to.have.nested.property('left.left.left.left.left.right.left.type', 'number');
-            expect(results).to.have.nested.property('left.left.left.left.left.right.left.value', 9);
-            expect(results).to.have.nested.property('left.left.left.left.left.right.right.type', 'number');
-            expect(results).to.have.nested.property('left.left.left.left.left.right.right.value', 7);
+            expect(results).to.have.nested.property('left.left.left.left.left.right.left.value', 2);
+            expect(results).to.have.nested.property('left.left.left.left.left.right.right.type', 'exponent');
+            expect(results).to.have.nested.property('left.left.left.left.left.right.right.left.type', 'number');
+            expect(results).to.have.nested.property('left.left.left.left.left.right.right.left.value', 9);
+            expect(results).to.have.nested.property('left.left.left.left.left.right.right.right.type', 'number');
+            expect(results).to.have.nested.property('left.left.left.left.left.right.right.right.value', 7);
             expect(results).to.have.nested.property('left.left.left.left.right.type', 'number');
             expect(results).to.have.nested.property('left.left.left.left.right.value', 6);
             expect(results).to.have.nested.property('left.left.left.right.type', 'number');

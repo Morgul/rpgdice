@@ -18,7 +18,7 @@
     }, left);
   }
   function rightAssocOperation(rest, right) {
-    return rest.reduce((right, current) => {
+    return rest.reduceRight((right, current) => {
       return new Operation(current.oper, current.left, right);
     }, right);
   }
