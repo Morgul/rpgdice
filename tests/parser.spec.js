@@ -223,7 +223,7 @@ describe('Dice Syntax Parser', () =>
 
         it('supports order of operations', () =>
         {
-            let results = parser.parse('3 + 2 - 5 * 4 / 6 % 7 ^ 9 * (1 + 2)');
+            let results = parser.parse('3 + 2 - 5 * 4 / 6 % 7 ^ 9 ^ 2 * (1 + 2)');
             expect(results).to.have.property('type', 'subtract');
             expect(results).to.have.nested.property('left.type', 'add');
             expect(results).to.have.nested.property('left.left.type', 'number');
@@ -243,8 +243,11 @@ describe('Dice Syntax Parser', () =>
             expect(results).to.have.nested.property('right.left.right.type', 'exponent');
             expect(results).to.have.nested.property('right.left.right.left.type', 'number');
             expect(results).to.have.nested.property('right.left.right.left.value', 7);
-            expect(results).to.have.nested.property('right.left.right.right.type', 'number');
-            expect(results).to.have.nested.property('right.left.right.right.value', 9);
+            expect(results).to.have.nested.property('right.left.right.right.type', 'exponent');
+            expect(results).to.have.nested.property('right.left.right.right.left.type', 'number');
+            expect(results).to.have.nested.property('right.left.right.right.left.value', 9);
+            expect(results).to.have.nested.property('right.left.right.right.right.type', 'number');
+            expect(results).to.have.nested.property('right.left.right.right.right.value', 2);
             expect(results).to.have.nested.property('right.right.type', 'parentheses');
             expect(results).to.have.nested.property('right.right.content.type', 'add');
             expect(results).to.have.nested.property('right.right.content.left.type', 'number');
@@ -252,7 +255,7 @@ describe('Dice Syntax Parser', () =>
             expect(results).to.have.nested.property('right.right.content.right.type', 'number');
             expect(results).to.have.nested.property('right.right.content.right.value', 2);
 
-            results = parser.parse('(2 + 1) * 9 ^ 7 % 6 / 4 * 5 - 2 + 3');
+            results = parser.parse('(2 + 1) * 2 ^ 9 ^ 7 % 6 / 4 * 5 - 2 + 3');
             expect(results).to.have.property('type', 'add');
             expect(results).to.have.nested.property('left.type', 'subtract');
             expect(results).to.have.nested.property('left.left.type', 'multiply');
@@ -267,9 +270,12 @@ describe('Dice Syntax Parser', () =>
             expect(results).to.have.nested.property('left.left.left.left.left.left.content.right.value', 1);
             expect(results).to.have.nested.property('left.left.left.left.left.right.type', 'exponent');
             expect(results).to.have.nested.property('left.left.left.left.left.right.left.type', 'number');
-            expect(results).to.have.nested.property('left.left.left.left.left.right.left.value', 9);
-            expect(results).to.have.nested.property('left.left.left.left.left.right.right.type', 'number');
-            expect(results).to.have.nested.property('left.left.left.left.left.right.right.value', 7);
+            expect(results).to.have.nested.property('left.left.left.left.left.right.left.value', 2);
+            expect(results).to.have.nested.property('left.left.left.left.left.right.right.type', 'exponent');
+            expect(results).to.have.nested.property('left.left.left.left.left.right.right.left.type', 'number');
+            expect(results).to.have.nested.property('left.left.left.left.left.right.right.left.value', 9);
+            expect(results).to.have.nested.property('left.left.left.left.left.right.right.right.type', 'number');
+            expect(results).to.have.nested.property('left.left.left.left.left.right.right.right.value', 7);
             expect(results).to.have.nested.property('left.left.left.left.right.type', 'number');
             expect(results).to.have.nested.property('left.left.left.left.right.value', 6);
             expect(results).to.have.nested.property('left.left.left.right.type', 'number');
@@ -280,6 +286,105 @@ describe('Dice Syntax Parser', () =>
             expect(results).to.have.nested.property('left.right.value', 2);
             expect(results).to.have.nested.property('right.type', 'number');
             expect(results).to.have.nested.property('right.value', 3);
+        });
+    });
+
+    describe('Boolean Operations', () =>
+    {
+        it('supports not', () =>
+        {
+            const results = parser.parse('!5');
+
+            expect(results.type).to.equal('not');
+            expect(results.content).to.have.property('type', 'number');
+        });
+
+        it('supports equal', () =>
+        {
+            const results = parser.parse('1d20 == 5');
+
+            expect(results.type).to.equal('equal');
+            expect(results.left).to.have.property('type', 'roll');
+            expect(results.right).to.have.property('type', 'number');
+        });
+
+        it('supports notEqual', () =>
+        {
+            const results = parser.parse('1d20 != 5');
+
+            expect(results.type).to.equal('notEqual');
+            expect(results.left).to.have.property('type', 'roll');
+            expect(results.right).to.have.property('type', 'number');
+        });
+
+        it('supports greaterThan', () =>
+        {
+            const results = parser.parse('1d20 > 5');
+
+            expect(results.type).to.equal('greaterThan');
+            expect(results.left).to.have.property('type', 'roll');
+            expect(results.right).to.have.property('type', 'number');
+        });
+
+        it('supports lessThan', () =>
+        {
+            const results = parser.parse('1d20 < 5');
+
+            expect(results.type).to.equal('lessThan');
+            expect(results.left).to.have.property('type', 'roll');
+            expect(results.right).to.have.property('type', 'number');
+        });
+
+        it('supports greaterThanOrEqual', () =>
+        {
+            const results = parser.parse('1d20 >= 5');
+
+            expect(results.type).to.equal('greaterThanOrEqual');
+            expect(results.left).to.have.property('type', 'roll');
+            expect(results.right).to.have.property('type', 'number');
+        });
+
+        it('supports lessThanOrEqual', () =>
+        {
+            const results = parser.parse('1d20 <= 5');
+
+            expect(results.type).to.equal('lessThanOrEqual');
+            expect(results.left).to.have.property('type', 'roll');
+            expect(results.right).to.have.property('type', 'number');
+        });
+    });
+
+    describe('Logical Operations', () =>
+    {
+        it('supports or', () =>
+        {
+            const results = parser.parse('0 || 10');
+
+            expect(results.type).to.equal('or');
+            expect(results.left).to.have.property('type', 'number');
+            expect(results.right).to.have.property('type', 'number');
+        });
+
+        it('supports and', () =>
+        {
+            const results = parser.parse('0 && 10');
+
+            expect(results.type).to.equal('and');
+            expect(results.left).to.have.property('type', 'number');
+            expect(results.right).to.have.property('type', 'number');
+        });
+    });
+
+    describe('Conditionals', () =>
+    {
+        it('supports conditionals', () =>
+        {
+            const results = parser.parse('1d20 + 5 >= 10 ? 2d8 + 3 : 0');
+
+            expect(results.type).to.equal('conditional');
+            expect(results.condition).to.have.property('type', 'greaterThanOrEqual');
+            expect(results.thenExpr).to.have.property('type', 'add');
+            expect(results.elseExpr).to.have.property('type', 'number');
         });
     });
 
@@ -412,6 +517,42 @@ describe('Dice Syntax Parser', () =>
             expect(results.type).to.equal('function');
             expect(results.name).to.equal('func with spaces');
         });
+    });
+
+    describe('Speed', () =>
+    {
+        it('performs long parses quickly', () =>
+        {
+            const start = Date.now();
+            const results = parser.parse('5 + 5 + 5 + 5 + 5 + 5 + 5 + 5 + 5 + 5 + 5 + 5 + 5 + 5 + 5 + 5 + 5 + 5 + 5 + 5 + 5 + 5 + 5 + 5 + 5 + 5 + 5 + 5 + 5');
+            const end = Date.now();
+
+            expect(results.type).to.equal('add');
+
+            const time = (end - start);
+            if(time > 500) 
+            {
+                throw Error(`Parse took ${ time }ms!`);
+            }
+        });
+
+        // Future test we hope to be able to clear, currently not consistant due to limitations in PEG.js
+        /*
+        it('performs deeply nested parses quickly', () =>
+        {
+            const start = Date.now();
+            const results = parser.parse('((((((((5))))))))');
+            const end = Date.now();
+
+            expect(results.type).to.equal('parentheses');
+
+            const time = (end - start);
+            if(time > 500) 
+            {
+                throw Error(`Parse took ${ time }ms!`);
+            }
+        });
+        */
     });
 });
 

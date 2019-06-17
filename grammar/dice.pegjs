@@ -1,6 +1,8 @@
 {
   /* Import expression types */
-  const Operation = require('./Operation')
+  const Conditional = require('./Conditional');
+  const Operation = require('./Operation');
+  const Not = require('./Not');
   const Repeat = require('./Repeat');
   const Func = require('./Function');
   const Roll = require('./Roll');
@@ -10,16 +12,15 @@
   const Parentheses = require('./Parentheses');
 
   /* Define side-associative operation helper functions */
-  function leftAssocOperation(rest, right) {
-    if (!rest.length) return right;
-    var current = rest.pop();
-    return new Operation(current.oper, leftAssocOperation(rest, current.left), right);
+  function leftAssocOperation(left, rest) {
+    return rest.reduce((left, current) => {
+      return new Operation(current.oper, left, current.right);
+    }, left);
   }
-
-  function rightAssocOperation(left, rest) {
-    if (!rest.length) return left;
-    var current = rest.shift();
-    return new Operation(current.oper, left, rightAssocOperation(current.right, rest));
+  function rightAssocOperation(rest, right) {
+    return rest.reduceRight((right, current) => {
+      return new Operation(current.oper, current.left, right);
+    }, right);
   }
 }
 
@@ -29,32 +30,58 @@
 
 /* Trim leading & trailing whitespace */
 start "start"
-  = OWS primary:primary OWS
-    { return primary; }
+  = OWS restart:restart OWS
+    { return restart; }
 
 /* The restart point for later rules, purely organizational */
-primary "primary"
-  = additive:additive
-    { return additive; }
+restart "restart"
+  = conditional
+  / or
+
+/* Parse conditionals to be right-associative */
+conditional "conditional"
+  = condition:or OWS '?' OWS thenExpr:restart OWS ':' OWS elseExpr:restart
+    { return new Conditional(condition, thenExpr, elseExpr); }
+
+/* Parse ors to be left-associative */
+or "or"
+  = left:and rest:(OWS oper:'||' OWS right:and { return {oper: oper, right: right}; })*
+    { return leftAssocOperation(left, rest); }
+
+/* Parse ands to be left-associative */
+and "and"
+  = left:equality rest:(OWS oper:'&&' OWS right:equality { return {oper: oper, right: right}; })*
+    { return leftAssocOperation(left, rest); }
+
+/* Parse equalities to be left-associative */
+equality "equality"
+  = left:comparative rest:(OWS oper:('!=' / '==') OWS right:comparative { return {oper: oper, right: right}; })*
+    { return leftAssocOperation(left, rest); }
+
+/* Parse comparatives to be left-associative */
+comparative "comparative"
+  = left:additive rest:(OWS oper:('>=' / '<=' / '>' / '<') OWS right:additive { return {oper: oper, right: right}; })*
+    { return leftAssocOperation(left, rest); }
 
 /* Parse additives to be left-associative */
 additive "additive"
-  = rest:(left:multiplicative OWS oper:[+-] OWS { return {left: left, oper: oper}; })* right:multiplicative
-    { return leftAssocOperation(rest, right); }
+  = left:multiplicative rest:(OWS oper:[+-] OWS right:multiplicative { return {oper: oper, right: right}; })*
+    { return leftAssocOperation(left, rest); }
 
 /* Parse multiplicatives to be left-associative */
 multiplicative "multiplicative"
-  = rest:(left:exponent OWS oper:[*/%] OWS { return {left: left, oper: oper}; })* right:exponent
-    { return leftAssocOperation(rest, right); }
+  = left:exponent rest:(OWS oper:[*/%] OWS right:exponent { return {oper: oper, right: right}; })*
+    { return leftAssocOperation(left, rest); }
 
 /* Parse exponents to be right-associative */
 exponent "exponent"
-  = left:value rest:(OWS oper:'^' OWS right:value { return {oper: oper, right: right}; })*
-    { return rightAssocOperation(left, rest); }
+  = rest:(left:value OWS oper:'^' OWS { return {left: left, oper: oper}; })* right:value
+    { return rightAssocOperation(rest, right); }
 
-/* For the rest of the parsing rules we can just use any order that avoids false positives */
+/* For the rest of the parsing rules we can just use any order that avoids false positives, purely organizational */
 value "value"
-  = repeat
+  = not
+  / repeat
   / func
   / roll
   / factorial
@@ -62,14 +89,19 @@ value "value"
   / num
   / parentheses
 
+/* Strait forward not */
+not "not"
+  = '!' OWS content:restart
+    { return new Not(content); }
+
 /* Repeat with as many count options as possible */
 repeat "repeat"
-  = count:(parentheses / factorial / num) OWS '(' OWS content:primary OWS ')'
+  = count:(parentheses / factorial / num) OWS '(' OWS content:restart OWS ')'
     { return new Repeat(count, content); }
 
 /* Function allows an array of arguments, if no arguments found return empty array */
 func "function"
-  = name:identifier OWS '(' args:(OWS first:primary? rest:(OWS ',' OWS arg:primary { return arg; })* { return (first ? [first] : []).concat(rest); }) OWS ')'
+  = name:identifier OWS '(' args:(OWS first:restart? rest:(OWS ',' OWS arg:restart { return arg; })* { return (first ? [first] : []).concat(rest); }) OWS ')'
     { return new Func(name, args); }
 
 /* Roll uses simplified right-associativity */
@@ -77,9 +109,9 @@ roll "die roll"
   = count:(count:(parentheses / factorial / num)? { return count || undefined; }) OWS 'd' OWS sides:(parentheses / roll / factorial / num)
     { return new Roll(count, sides); }
 
-/* Strait forward factorial */
+/* Factorial with a fix to prevent '5 != 4' false positive */
 factorial "factorial"
-  = content:posintnum OWS '!'
+  = content:posintnum OWS '!' !('=' !'=')
     { return new Factorial(content); }
 
 /* Strait forward variable */
@@ -99,7 +131,7 @@ posintnum "positive integer number"
 
 /* Strait forward parentheses */
 parentheses "parentheses"
-  = '(' OWS content:primary OWS ')'
+  = '(' OWS content:restart OWS ')'
     { return new Parentheses(content); }
 
 

@@ -12,8 +12,15 @@
         </p>
 
         <form onsubmit="return rollDice(event);">
+            <label for="diceInput">Dice Syntax String:</label>
+            <br />
             <input id="diceInput" placeholder="1d6 + 1">
             <button id="rollBtn" type="submit">Roll!</button>
+            <br />
+            <br />
+            <label for="scope">Dice Eval Scope (JSON)</label>
+            <br />
+            <textarea id="scope" placeholder='{"variable":"value"}'></textarea>
         </form>
 
         <h4>Output</h4>
@@ -28,23 +35,90 @@
                 }
 
                 const rollText = document.getElementById('diceInput').value;
+                let rollScope = document.getElementById('scope').value || '{}';
                 const rollHistElem = document.getElementById('rollHist');
-                const results = rpgdice.eval(rollText);
-
-                console.log(results);
 
                 rollHistElem.innerHTML = '';
                 rollHistElem.innerHTML += '<strong>input</strong>';
-                rollHistElem.innerHTML += `\n${ rollText }`;
+                rollHistElem.innerHTML += `\n${ rollText || 'No input' }`;
+
+                try
+                {
+                    rollScope = JSON.parse(rollScope);
+                }
+                catch (err)
+                {
+                    rollHistElem.innerHTML += '\n\n<strong>scope error</strong>';
+                    rollHistElem.innerHTML += `\n${ err }`;
+
+                    return false;
+                }
+
+                rollHistElem.innerHTML += '\n\n<strong>scope</strong>';
+                rollHistElem.innerHTML += `\n${ JSON.stringify(rollScope, undefined, 2) }`;
+
+                if(!rollText.length)
+                {
+                    return false;
+                }
+
+                let parsed;
+                let parsedTime;
+
+                try
+                {
+                    const parsedStart = Date.now();
+                    parsed = rpgdice.parse(rollText);
+                    const parsedEnd = Date.now();
+
+                    parsedTime = parsedEnd - parsedStart;
+                }
+                catch (err)
+                {
+                    rollHistElem.innerHTML += '\n\n<strong>parse error</strong>';
+                    rollHistElem.innerHTML += `\n${ err }`;
+
+                    return false;
+                }
+
+                rollHistElem.innerHTML += '\n\n<strong>parse time</strong>';
+                rollHistElem.innerHTML += `\n${ parsedTime }ms`;
                 rollHistElem.innerHTML += '\n\n<strong>toString</strong>';
-                rollHistElem.innerHTML += `\n${ results.toString() }`;
+                rollHistElem.innerHTML += `\n${ parsed.toString() }`;
+
+                let evaled;
+                let evaledTime;
+
+                try
+                {
+                    const evaledStart = Date.now();
+                    evaled = parsed.eval(rollScope);
+                    const evaledEnd = Date.now();
+
+                    evaledTime = evaledEnd - evaledStart;
+                }
+                catch (err)
+                {
+                    rollHistElem.innerHTML += '\n\n<strong>eval error</strong>';
+                    rollHistElem.innerHTML += `\n${ err }`;
+
+                    return false;
+                }
+
+                rollHistElem.innerHTML += '\n\n<strong>eval time</strong>';
+                rollHistElem.innerHTML += `\n${ evaledTime }ms`;
                 rollHistElem.innerHTML += '\n\n<strong>render</strong>';
-                rollHistElem.innerHTML += `\n${ results.render() } = <strong>${ results.value }</strong>`;
+                rollHistElem.innerHTML += `\n${ evaled.render() }`;
+
+                console.log(evaled);
+
+                rollHistElem.innerHTML += '\n\n<strong>value</strong>';
+                rollHistElem.innerHTML += `\n${ evaled.value }`;
                 rollHistElem.innerHTML += '\n\n<strong>JSON</strong>';
-                rollHistElem.innerHTML += `\n${ JSON.stringify(results, undefined, 2) }`;
+                rollHistElem.innerHTML += `\n${ JSON.stringify(evaled, undefined, 2) }`;
 
                 return false;
-            }
+            };
         </script>
     </body>
 </html>
