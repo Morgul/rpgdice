@@ -41,30 +41,12 @@ Or with `yarn`:
 $ yarn add rpgdicejs
 ```
 
-Now, if you want to use this in a browser, any of the major bundlers should be able to handle this module just fine. 
-It's been written to work with `parcel`, `rollup`, or `webpack` without any work on the developer's part. (It may still 
-work with `browserify`, but that hasn't been tested.)
+Now, if you want to use this in a browser, any of the major bundlers should be able to handle this module just fine. It 
+should be noted that as this is still a CJS module, you may be required to do some work, but it has no dependencies, 
+and works in both node and the browser, so bundling it should be easy.
 
-However, if you need a pre-bundled version, we do publish it along side the npm module: `/dist/rpgdice.min.js`. (We even 
-publish the source map!) This is a UMD (built by `parcel`), so it will work via a bundler, or just including it in a 
-script tag. If you do use this as a script tag, it's exposed as `window.rpgdice`.
-
-If you need this library via cdn, you can use jsdelivr:
-
-```html
-<script src="https://cdn.jsdelivr.net/npm/rpgdicejs@latest/dist/rpgdice.min.js"></script>
-```
-
-### Older node.js versions
-
-If you want to use RPGDice, but you're on a node version < 6, the bundled version _should_ run for you. You will want to
-force the install (`--ignore-engines`) and then import the bundle directly:
-
-```javascript
-const rpgdice = require('rpgdicejs/dist/rpgdice.min.js');
-
-// Roll on
-```
+We used to provide a bundled version but have removed it in an interest of maintainability. In the future the code base 
+will be converted to typescript, and at that time we'll provide UMD, CJS and ESM module versions for easy consumption.
 
 ### Syntax Summary
 
