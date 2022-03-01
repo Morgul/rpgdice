@@ -9,7 +9,7 @@
     "peg": "pegjs --format commonjs -o lib/parser.js grammar/dice.pegjs",
     "build": "npm run clean && npm run peg && parcel build index.js --out-file rpgdice.min.js --global rpgdice --detailed-report",
     "prepublishOnly": "npm run build",
-    "eslint-fix": "eslint --fix index.js lib/ tests/",
+    "lint:fix": "eslint --fix index.js lib/ tests/",
     "test": "mocha ./tests/**/*.spec.js --reporter spec --recursive"
   },
   "keywords": [
@@ -21,10 +21,7 @@
   "license": "MIT",
   "engineStrict": true,
   "engines": {
-    "node": ">= 6.0.0"
-  },
-  "dependencies": {
-    "randombytes": "^2.1.0"
+    "node": ">= 10.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.3.4",
@@ -40,6 +37,6 @@
     "rimraf": "^3.0.2"
   },
   "lint-staged": {
-    "*.{ts,js,vue}": "npm run lint:fix"
+    "*.{ts,js}": "npm run lint:fix"
   }
 }
