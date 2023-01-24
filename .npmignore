@@ -1,5 +1,6 @@
 # We want to publish the dist file in the npm package
 !dist
+!types
 
 # Slim down the package on npm some.
 .cache

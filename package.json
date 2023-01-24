@@ -3,6 +3,7 @@
   "version": "2.0.1",
   "description": "A generic RPG dice roller syntax and library.",
   "main": "index.js",
+  "types": "types/index.d.ts",
   "scripts": {
     "peg": "pegjs --format commonjs -o lib/parser.js grammar/dice.pegjs",
     "lint:fix": "eslint --fix index.js lib/ tests/",
